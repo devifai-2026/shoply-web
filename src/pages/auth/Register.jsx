@@ -33,23 +33,24 @@ export default function Register() {
           className="bg-surface p-12 lg:p-16 border border-border-minimal"
         >
           <div className="text-center mb-16">
-            <h1 className="text-[28px] font-light text-ink mb-3 tracking-tight">Create Identity</h1>
-            <p className="text-subtle text-[13px] font-medium leading-relaxed">Join for exclusive access to curated releases and a seamless experience.</p>
+            <h1 className="font-heading text-[28px] font-normal text-ink mb-3">Create Identity</h1>
+            <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mt-2 mb-4 mx-auto" />
+            <p className="text-subtle text-[13px] font-normal leading-relaxed">Join for exclusive access to curated releases and a seamless experience.</p>
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 text-[13px] font-medium text-center">
+            <div className="mb-8 p-4 bg-surface border border-ink text-ink text-[13px] font-normal text-center">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase text-ink tracking-widest block">Full Name</label>
+              <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] block">Full Name</label>
               <input
                 type="text"
                 placeholder="John Doe"
-                className="w-full bg-white border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-medium text-ink transition-colors"
+                className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-normal text-ink transition-colors"
                 value={formData.name}
                 onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 required
@@ -57,11 +58,11 @@ export default function Register() {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase text-ink tracking-widest block">Email Address</label>
+              <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] block">Email Address</label>
               <input
                 type="email"
                 placeholder="name@example.com"
-                className="w-full bg-white border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-medium text-ink transition-colors"
+                className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-normal text-ink transition-colors"
                 value={formData.email}
                 onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
                 required
@@ -69,12 +70,12 @@ export default function Register() {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase text-ink tracking-widest block">Password</label>
+              <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] block">Password</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 minLength={6}
-                className="w-full bg-white border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-medium text-ink transition-colors"
+                className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-normal text-ink transition-colors"
                 value={formData.password}
                 onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))}
                 required
@@ -84,16 +85,15 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-accent text-white py-4 text-[12px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity mt-6 disabled:opacity-50"
-              style={{ borderRadius: 'var(--btn-radius, 0px)' }}
+              className="w-full bg-accent text-white py-4 text-[12px] font-normal uppercase tracking-[0.011em] hover:opacity-90 transition-opacity mt-6 disabled:opacity-50 rounded-[4px]"
             >
               {loading ? 'Creating Account...' : 'Establish Account'}
             </button>
           </form>
 
-          <p className="text-center mt-12 text-[13px] text-subtle font-medium">
+          <p className="text-center mt-12 text-[13px] text-subtle font-normal">
             Member already?{' '}
-            <Link to="/login" className="text-ink font-bold hover:underline underline-offset-4 decoration-accent transition-all">
+            <Link to="/login" className="text-ink font-medium hover:underline underline-offset-4 decoration-accent transition-all">
               Sign in
             </Link>
           </p>

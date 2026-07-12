@@ -20,14 +20,14 @@ export default function Wishlist() {
 
   if (loading) {
     return (
-      <div className="bg-white border border-border-minimal animate-pulse">
+      <div className="bg-surface border border-border-minimal animate-pulse">
         <div className="p-10 border-b border-border-minimal h-16" />
         <div className={`grid grid-cols-2 sm:grid-cols-3 ${lgCols} gap-6 p-10`}>
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="space-y-3">
-              <div className="aspect-square bg-surface" />
-              <div className="h-4 bg-surface w-3/4 rounded" />
-              <div className="h-4 bg-surface w-1/2 rounded" />
+              <div className="aspect-square bg-bg" />
+              <div className="h-4 bg-bg w-3/4 rounded-[4px]" />
+              <div className="h-4 bg-bg w-1/2 rounded-[4px]" />
             </div>
           ))}
         </div>
@@ -36,10 +36,10 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="bg-white border border-border-minimal animate-in fade-in duration-700">
+    <div className="bg-surface border border-border-minimal animate-in fade-in duration-700">
       <div className="flex items-center justify-between p-10 border-b border-border-minimal">
-        <h2 className="text-[14px] font-bold text-ink uppercase tracking-[0.2em]">Saved Selections</h2>
-        <span className="text-[11px] font-bold text-subtle uppercase tracking-widest">
+        <h2 className="text-[14px] font-normal text-ink uppercase tracking-[0.011em]">Saved Selections</h2>
+        <span className="text-[11px] font-normal text-subtle uppercase tracking-[0.011em]">
           {wishlist.length} {wishlist.length === 1 ? 'entry' : 'entries'}
         </span>
       </div>
@@ -49,7 +49,7 @@ export default function Wishlist() {
           <div className="w-16 h-16 mx-auto mb-10 text-subtle">
             <Heart className="w-full h-full stroke-[1.2]" />
           </div>
-          <h3 className="text-[18px] font-light text-ink mb-3">Void Selections</h3>
+          <h3 className="text-[18px] font-heading font-normal text-ink mb-3">Void Selections</h3>
           <p className="text-subtle text-[13px] mb-12 max-w-xs mx-auto leading-relaxed">
             Consider archiving pieces that resonate with your aesthetic for future acquisition.
           </p>
@@ -78,7 +78,7 @@ export default function Wishlist() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-subtle text-xs uppercase tracking-widest">
+                      <div className="w-full h-full flex items-center justify-center text-subtle text-xs uppercase tracking-[0.011em]">
                         No image
                       </div>
                     )}

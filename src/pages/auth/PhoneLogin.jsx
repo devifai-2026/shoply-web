@@ -39,33 +39,34 @@ export default function PhoneLogin() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-surface p-12 lg:p-16 border border-border-minimal"
         >
-          <div className="text-center mb-16">
-            <h1 className="text-[28px] font-light text-ink mb-3 tracking-tight">Mobile Login</h1>
-            <p className="text-subtle text-[13px] font-medium leading-relaxed">
+          <div className="mb-16">
+            <h1 className="font-heading text-[28px] font-normal text-ink mb-3">Mobile Login</h1>
+            <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mt-2 mb-4" />
+            <p className="text-subtle text-[13px] font-normal leading-relaxed">
               Enter your mobile number to receive a one-time password.
             </p>
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 text-[13px] font-medium text-center">
+            <div className="mb-8 p-4 bg-surface border border-ink text-ink text-[13px] font-normal text-center">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase text-ink tracking-widest block">
+              <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] block">
                 Mobile Number
               </label>
               <div className="flex">
-                <span className="flex items-center px-4 bg-bg border border-r-0 border-border-minimal text-[13px] font-bold text-ink select-none">
+                <span className="flex items-center px-4 bg-bg border border-r-0 border-border-minimal text-[13px] font-medium text-ink select-none">
                   +91
                 </span>
                 <input
                   type="tel"
                   placeholder="10-digit number"
                   maxLength={10}
-                  className="flex-1 bg-white border border-border-minimal rounded-r-sm py-4 px-5 focus:border-accent outline-none text-[13px] font-medium text-ink transition-colors"
+                  className="flex-1 bg-surface border border-border-minimal rounded-r-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-normal text-ink transition-colors"
                   value={phone}
                   onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   required
@@ -76,23 +77,22 @@ export default function PhoneLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-accent text-white py-4 text-[12px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity mt-6 disabled:opacity-50"
-              style={{ borderRadius: 'var(--btn-radius, 0px)' }}
+              className="w-full bg-accent text-white py-4 rounded-[4px] text-[12px] font-normal uppercase tracking-[0.011em] hover:opacity-90 transition-opacity mt-6 disabled:opacity-50"
             >
               {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
           </form>
 
           <div className="mt-10 pt-8 border-t border-border-minimal text-center space-y-3">
-            <p className="text-[13px] text-subtle font-medium">
+            <p className="text-[13px] text-subtle font-normal">
               Prefer email?{' '}
-              <Link to="/login" className="text-ink font-bold hover:underline underline-offset-4 decoration-accent">
+              <Link to="/login" className="text-ink font-medium hover:underline underline-offset-4 decoration-accent">
                 Sign in with email
               </Link>
             </p>
-            <p className="text-[13px] text-subtle font-medium">
+            <p className="text-[13px] text-subtle font-normal">
               New here?{' '}
-              <Link to="/register" className="text-ink font-bold hover:underline underline-offset-4 decoration-accent">
+              <Link to="/register" className="text-ink font-medium hover:underline underline-offset-4 decoration-accent">
                 Create account
               </Link>
             </p>

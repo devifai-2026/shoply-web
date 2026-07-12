@@ -38,46 +38,46 @@ export default function ChangePassword() {
   const inputType = showPasswords ? 'text' : 'password';
 
   return (
-    <div className="bg-white border border-border-minimal p-10 lg:p-16 animate-in fade-in duration-700">
+    <div className="bg-surface border border-border-minimal p-10 lg:p-16 animate-in fade-in duration-700">
       <div className="flex items-center gap-4 mb-12 pb-6 border-b border-border-minimal">
         <Lock className="w-4 h-4 text-ink stroke-[1.5]" />
-        <h2 className="text-[14px] font-bold text-ink uppercase tracking-[0.2em]">Security</h2>
+        <h2 className="text-[14px] font-normal text-ink uppercase tracking-[0.011em]">Security</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-10 max-w-xl">
-        {error && <p className="text-red-500 text-[13px] font-medium">{error}</p>}
-        {saved && <p className="text-green-600 text-[13px] font-medium">Password changed successfully.</p>}
+        {error && <p className="text-sale text-[13px] font-normal">{error}</p>}
+        {saved && <p className="text-ink text-[13px] font-normal">Password changed successfully.</p>}
 
         <div className="space-y-3">
-          <label className="text-[11px] font-bold uppercase text-ink tracking-widest pl-1">Current Password</label>
+          <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] pl-1">Current Password</label>
           <input
             type={inputType}
             value={currentPassword}
             onChange={e => setCurrentPassword(e.target.value)}
             autoComplete="current-password"
-            className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-6 focus:border-accent outline-none font-semibold text-ink text-[13px]"
+            className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-6 focus:border-accent outline-none font-normal text-ink text-[13px]"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           <div className="space-y-3">
-            <label className="text-[11px] font-bold uppercase text-ink tracking-widest pl-1">New Password</label>
+            <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] pl-1">New Password</label>
             <input
               type={inputType}
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               autoComplete="new-password"
-              className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-6 focus:border-accent outline-none font-semibold text-ink text-[13px]"
+              className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-6 focus:border-accent outline-none font-normal text-ink text-[13px]"
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[11px] font-bold uppercase text-ink tracking-widest pl-1">Confirm New Password</label>
+            <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] pl-1">Confirm New Password</label>
             <input
               type={inputType}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
-              className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-6 focus:border-accent outline-none font-semibold text-ink text-[13px]"
+              className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-6 focus:border-accent outline-none font-normal text-ink text-[13px]"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function ChangePassword() {
         <button
           type="button"
           onClick={() => setShowPasswords(v => !v)}
-          className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-subtle hover:text-ink transition-colors"
+          className="flex items-center gap-2 text-[11px] font-normal uppercase tracking-[0.011em] text-subtle hover:text-ink transition-colors"
         >
           {showPasswords ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
           {showPasswords ? 'Hide passwords' : 'Show passwords'}

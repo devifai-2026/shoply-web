@@ -20,10 +20,10 @@ export default function BrandsPage() {
 
   return (
     <div className="bg-bg min-h-screen pb-32">
-      <div className="bg-white border-b border-border-minimal py-24 lg:py-40">
+      <div className="bg-surface border-b border-border-minimal py-24 lg:py-40">
         <div className="container mx-auto px-10 text-center max-w-3xl">
-          <h1 className="text-[40px] lg:text-[64px] font-light text-ink tracking-tight mb-8 uppercase">Collaborations</h1>
-          <p className="text-subtle text-[14px] font-medium mb-12 max-w-xl mx-auto leading-loose">
+          <h1 className="font-heading text-[40px] lg:text-[64px] font-normal text-ink tracking-tight mb-8">Collaborations</h1>
+          <p className="text-subtle text-[14px] font-normal mb-12 max-w-xl mx-auto leading-loose">
             We maintain direct synergies with global designers to curate collections of unparalleled precision and certified integrity.
           </p>
           <div className="relative max-w-sm mx-auto">
@@ -32,7 +32,7 @@ export default function BrandsPage() {
               placeholder="Query brand index..."
               value={query}
               onChange={e => setQuery(e.target.value)}
-              className="w-full bg-surface border border-border-minimal rounded-none py-4 px-12 focus:border-accent outline-none text-[12px] uppercase tracking-widest font-bold"
+              className="w-full bg-surface border border-border-minimal rounded-full py-4 px-12 focus:border-ink outline-none text-[12px] uppercase tracking-[0.011em] font-normal"
             />
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
           </div>

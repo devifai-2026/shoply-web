@@ -36,23 +36,24 @@ export default function Login() {
           className="bg-surface p-12 lg:p-16 border border-border-minimal"
         >
           <div className="text-center mb-16">
-            <h1 className="text-[28px] font-light text-ink mb-3 tracking-tight">Access Account</h1>
-            <p className="text-subtle text-[13px] font-medium leading-relaxed">Enter your credentials to manage your curated collection.</p>
+            <h1 className="font-heading text-[28px] font-normal text-ink mb-3">Access Account</h1>
+            <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mt-2 mb-4 mx-auto" />
+            <p className="text-subtle text-[13px] font-normal leading-relaxed">Enter your credentials to manage your curated collection.</p>
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 text-[13px] font-medium text-center">
+            <div className="mb-8 p-4 bg-surface border border-ink text-ink text-[13px] font-normal text-center">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase text-ink tracking-widest block">Email Address</label>
+              <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] block">Email Address</label>
               <input
                 type="email"
                 placeholder="name@example.com"
-                className="w-full bg-white border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-medium text-ink transition-colors"
+                className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-normal text-ink transition-colors"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
@@ -61,13 +62,13 @@ export default function Login() {
 
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-[11px] font-bold uppercase text-ink tracking-widest">Password</label>
-                <Link to="/forgot-password" className="text-[11px] font-medium text-subtle hover:text-ink underline underline-offset-4 decoration-border-minimal">Forgot?</Link>
+                <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em]">Password</label>
+                <Link to="/forgot-password" className="text-[11px] font-normal text-subtle hover:text-ink underline underline-offset-4 decoration-border-minimal">Forgot?</Link>
               </div>
               <input
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-white border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-medium text-ink transition-colors"
+                className="w-full bg-surface border border-border-minimal rounded-[4px] py-4 px-5 focus:border-accent outline-none text-[13px] font-normal text-ink transition-colors"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
@@ -77,8 +78,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-accent text-white py-4 text-[12px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity mt-6 disabled:opacity-50"
-              style={{ borderRadius: 'var(--btn-radius, 0px)' }}
+              className="w-full bg-accent text-white py-4 text-[12px] font-normal uppercase tracking-[0.2em] rounded-[4px] hover:opacity-90 transition-opacity mt-6 disabled:opacity-50"
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
@@ -86,14 +86,13 @@ export default function Login() {
 
           <div className="mt-8 relative flex items-center gap-4">
             <div className="flex-1 h-px bg-border-minimal" />
-            <span className="text-[11px] font-bold text-subtle uppercase tracking-widest shrink-0">or</span>
+            <span className="text-[11px] font-normal text-subtle uppercase tracking-[0.011em] shrink-0">or</span>
             <div className="flex-1 h-px bg-border-minimal" />
           </div>
 
           <Link
             to="/phone-login"
-            className="mt-6 flex items-center justify-center gap-2 w-full border border-border-minimal py-4 text-[12px] font-bold uppercase tracking-[0.15em] text-ink hover:border-accent hover:text-accent transition-colors"
-            style={{ borderRadius: 'var(--btn-radius, 0px)' }}
+            className="mt-6 flex items-center justify-center gap-2 w-full border border-border-minimal rounded-[4px] py-4 text-[12px] font-normal uppercase tracking-[0.15em] text-ink hover:border-accent hover:text-accent transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>
@@ -101,9 +100,9 @@ export default function Login() {
             Login with Mobile OTP
           </Link>
 
-          <p className="text-center mt-8 text-[13px] text-subtle font-medium">
+          <p className="text-center mt-8 text-[13px] text-subtle font-normal">
             New here?{' '}
-            <Link to="/register" className="text-ink font-bold hover:underline underline-offset-4 decoration-accent transition-all">
+            <Link to="/register" className="text-ink font-medium hover:underline underline-offset-4 decoration-accent transition-all">
               Create account
             </Link>
           </p>

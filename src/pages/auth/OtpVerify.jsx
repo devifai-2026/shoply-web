@@ -102,15 +102,15 @@ export default function OtpVerify() {
           className="bg-surface p-12 lg:p-16 border border-border-minimal"
         >
           <div className="text-center mb-12">
-            <h1 className="text-[28px] font-light text-ink mb-3 tracking-tight">Verify OTP</h1>
-            <p className="text-subtle text-[13px] font-medium leading-relaxed">
+            <h1 className="font-heading text-[28px] font-normal text-ink mb-3">Verify OTP</h1>
+            <p className="text-subtle text-[13px] font-normal leading-relaxed">
               Enter the {OTP_LENGTH}-digit code sent to{' '}
-              <span className="font-bold text-ink">+91 {phone}</span>
+              <span className="font-medium text-ink">+91 {phone}</span>
             </p>
           </div>
 
           {error && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 text-[13px] font-medium text-center">
+            <div className="mb-8 p-4 bg-surface border border-ink text-ink text-[13px] font-normal text-center">
               {error}
             </div>
           )}
@@ -128,10 +128,9 @@ export default function OtpVerify() {
                   autoFocus={idx === 0}
                   onChange={e => handleChange(e.target.value, idx)}
                   onKeyDown={e => handleKeyDown(e, idx)}
-                  className={`w-16 h-16 text-center text-[24px] font-bold border outline-none transition-colors
-                    ${digit ? 'border-accent bg-white text-ink' : 'border-border-minimal bg-bg text-ink'}
+                  className={`w-16 h-16 text-center text-[24px] font-medium border outline-none transition-colors rounded-[4px]
+                    ${digit ? 'border-accent bg-surface text-ink' : 'border-border-minimal bg-bg text-ink'}
                     focus:border-accent`}
-                  style={{ borderRadius: 'var(--btn-radius, 0px)' }}
                 />
               ))}
             </div>
@@ -139,15 +138,14 @@ export default function OtpVerify() {
             <button
               type="submit"
               disabled={loading || otp.join('').length < OTP_LENGTH}
-              className="w-full bg-accent text-white py-4 text-[12px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity disabled:opacity-50"
-              style={{ borderRadius: 'var(--btn-radius, 0px)' }}
+              className="w-full bg-accent text-white py-4 text-[12px] font-normal uppercase tracking-[0.011em] rounded-[4px] hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {loading ? 'Verifying...' : 'Verify & Sign In'}
             </button>
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-[13px] text-subtle font-medium">
+            <p className="text-[13px] text-subtle font-normal">
               Didn't receive it?{' '}
               {countdown > 0 ? (
                 <span className="text-subtle">Resend in {countdown}s</span>
@@ -155,7 +153,7 @@ export default function OtpVerify() {
                 <button
                   onClick={handleResend}
                   disabled={resending}
-                  className="text-ink font-bold hover:underline underline-offset-4 decoration-accent disabled:opacity-50"
+                  className="text-ink font-medium hover:underline underline-offset-4 decoration-accent disabled:opacity-50"
                 >
                   {resending ? 'Sending...' : 'Resend OTP'}
                 </button>

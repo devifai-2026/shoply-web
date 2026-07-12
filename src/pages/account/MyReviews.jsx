@@ -4,9 +4,9 @@ import { Star } from 'lucide-react';
 
 export default function MyReviews() {
   return (
-    <div className="bg-white border border-border-minimal animate-in fade-in duration-700">
+    <div className="bg-surface border border-border-minimal animate-in fade-in duration-700">
       <div className="flex items-center justify-between p-10 border-b border-border-minimal">
-        <h2 className="text-[14px] font-bold text-ink uppercase tracking-[0.2em]">My Reviews</h2>
+        <h2 className="text-[14px] font-normal text-ink uppercase tracking-[0.011em]">My Reviews</h2>
       </div>
 
       <div className="py-24 text-center">

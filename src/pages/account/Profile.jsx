@@ -28,26 +28,26 @@ export default function Profile() {
   };
 
   return (
-    <div className="bg-white border border-border-minimal p-10 lg:p-16 animate-in fade-in duration-700">
-      <h2 className="text-[14px] font-bold text-ink uppercase tracking-[0.2em] mb-12 pb-6 border-b border-border-minimal">Account Identity</h2>
+    <div className="bg-surface border border-border-minimal p-10 lg:p-16 animate-in fade-in duration-700">
+      <h2 className="text-[14px] font-normal text-ink uppercase tracking-[0.011em] mb-12 pb-6 border-b border-border-minimal">Account Identity</h2>
 
       <div className="flex flex-col lg:flex-row gap-16 items-start">
         <div className="relative shrink-0">
-          <div className="w-40 h-40 bg-surface border border-border-minimal flex items-center justify-center font-light text-6xl text-subtle overflow-hidden">
+          <div className="w-40 h-40 rounded-full bg-surface border border-border-minimal flex items-center justify-center font-normal text-6xl text-subtle overflow-hidden">
             {user?.name?.[0]?.toUpperCase() || '?'}
           </div>
-          <button className="absolute -bottom-2 -right-2 p-3 bg-accent text-white hover:bg-subtle transition-colors">
+          <button className="absolute -bottom-2 -right-2 p-3 rounded-full bg-accent text-white hover:bg-subtle transition-colors">
             <Camera className="w-4 h-4" />
           </button>
         </div>
 
         <form onSubmit={handleSave} className="flex-grow space-y-10 max-w-xl">
-          {error && <p className="text-red-500 text-[13px] font-medium">{error}</p>}
-          {saved && <p className="text-green-600 text-[13px] font-medium">Profile updated successfully.</p>}
+          {error && <p className="text-ink text-[13px] font-medium">{error}</p>}
+          {saved && <p className="text-ink text-[13px] font-medium">Profile updated successfully.</p>}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
             <div className="space-y-3">
-              <label className="text-[11px] font-bold uppercase text-ink tracking-widest pl-1">Legal Name</label>
+              <label className="text-[11px] font-normal uppercase text-ink tracking-[0.011em] pl-1">Legal Name</label>
               <input
                 type="text"
                 value={name}
