@@ -43,6 +43,7 @@ import Dashboard from './pages/account/Dashboard';
 import Orders from './pages/account/Orders';
 import OrderDetail from './pages/account/OrderDetail';
 import Profile from './pages/account/Profile';
+import Addresses from './pages/account/Addresses';
 import Wishlist from './pages/account/Wishlist';
 import MyReviews from './pages/account/MyReviews';
 import ChangePassword from './pages/account/ChangePassword';
@@ -114,6 +115,7 @@ const router = createBrowserRouter([
           { path: 'orders', element: <Orders /> },
           { path: 'orders/:id', element: <OrderDetail /> },
           { path: 'profile', element: <Profile /> },
+          { path: 'addresses', element: <Addresses /> },
           { path: 'wishlist', element: <Wishlist /> },
           { path: 'reviews', element: <MyReviews /> },
           { path: 'change-password', element: <ChangePassword /> },

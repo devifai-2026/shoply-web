@@ -8,6 +8,27 @@ import { useAppearance } from '../context/AppearanceContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { useActiveOffer } from '../lib/useActiveOffer';
 
+// Builds a windowed page-number list (current page ±1, plus first/last),
+// with '…' markers for gaps — keeps the pagination bar's width bounded
+// regardless of how many total pages exist.
+function getPaginationRange(current, total) {
+  const delta = 1;
+  const range = [];
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+      range.push(i);
+    }
+  }
+  const withEllipses = [];
+  let prev = null;
+  for (const p of range) {
+    if (prev !== null && p - prev > 1) withEllipses.push('…');
+    withEllipses.push(p);
+    prev = p;
+  }
+  return withEllipses;
+}
+
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function FilterSection({ title, children, defaultOpen = true }) {
@@ -524,34 +545,40 @@ export default function ProductListing() {
                   ))}
                 </div>
 
-                {/* Pagination */}
+                {/* Pagination — windowed around the current page (current ±1, plus
+                    first/last) with ellipses, so page-number buttons never
+                    overflow the viewport regardless of total page count. */}
                 {pagination && pagination.pages > 1 && (
-                  <div className="mt-16 flex items-center justify-center gap-2">
+                  <div className="mt-16 flex items-center justify-center gap-2 overflow-x-auto max-w-full px-2">
                     <button
                       disabled={pagination.page <= 1}
                       onClick={() => { setParam('page', pagination.page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className="w-10 h-10 rounded-[4px] text-[13px] font-normal border border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="shrink-0 w-10 h-10 rounded-[4px] text-[13px] font-normal border border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       ‹
                     </button>
-                    {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(p => (
-                      <button
-                        key={p}
-                        onClick={() => { setParam('page', p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className={cn(
-                          'w-10 h-10 rounded-[4px] text-[13px] font-normal border transition-all',
-                          pagination.page === p
-                            ? 'bg-ink text-white border-ink'
-                            : 'border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink'
-                        )}
-                      >
-                        {p}
-                      </button>
-                    ))}
+                    {getPaginationRange(pagination.page, pagination.pages).map((p, idx) =>
+                      p === '…' ? (
+                        <span key={`ellipsis-${idx}`} className="w-10 h-10 flex items-center justify-center text-[13px] text-subtle shrink-0">…</span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => { setParam('page', p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                          className={cn(
+                            'shrink-0 w-10 h-10 rounded-[4px] text-[13px] font-normal border transition-all',
+                            pagination.page === p
+                              ? 'bg-ink text-white border-ink'
+                              : 'border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink'
+                          )}
+                        >
+                          {p}
+                        </button>
+                      )
+                    )}
                     <button
                       disabled={pagination.page >= pagination.pages}
                       onClick={() => { setParam('page', pagination.page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className="w-10 h-10 rounded-[4px] text-[13px] font-normal border border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="shrink-0 w-10 h-10 rounded-[4px] text-[13px] font-normal border border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       ›
                     </button>

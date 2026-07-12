@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, User, Heart, Star, Lock, LogOut, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, User, Heart, Star, Lock, LogOut, ChevronRight, MapPin } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 
@@ -17,6 +17,7 @@ export default function AccountLayout() {
     { label: 'Dashboard', icon: LayoutDashboard, path: '/account' },
     { label: 'Orders', icon: ShoppingBag, path: '/account/orders' },
     { label: 'Profile', icon: User, path: '/account/profile' },
+    { label: 'Addresses', icon: MapPin, path: '/account/addresses' },
     { label: 'Wishlist', icon: Heart, path: '/account/wishlist' },
     { label: 'Reviews', icon: Star, path: '/account/reviews' },
     { label: 'Security', icon: Lock, path: '/account/change-password' },

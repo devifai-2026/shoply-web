@@ -62,7 +62,7 @@ export function CartProvider({ children }) {
   };
 
   const updateQuantity = (productId, selectedColor, selectedSize, quantity) => {
-    if (quantity < 1) return;
+    if (!Number.isInteger(quantity) || quantity < 1) return;
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         (item.id === productId &&

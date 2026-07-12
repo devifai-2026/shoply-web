@@ -134,6 +134,14 @@ export default function Checkout() {
   const [pincodeAutoFilled, setPincodeAutoFilled] = useState(false);
   const [pincodeLoading, setPincodeLoading]       = useState(false);
 
+  // Per-cart-item add-on selections, keyed by the same id used in cartItems.
+  // { [itemId]: { giftWrap: bool, bundle: bool } }
+  const [addOns, setAddOns] = useState({});
+  const toggleGiftWrap = (itemId) =>
+    setAddOns(prev => ({ ...prev, [itemId]: { ...prev[itemId], giftWrap: !prev[itemId]?.giftWrap } }));
+  const toggleBundle = (itemId) =>
+    setAddOns(prev => ({ ...prev, [itemId]: { ...prev[itemId], bundle: !prev[itemId]?.bundle } }));
+
   const [formData, setFormData] = useState({
     email:     user?.email || '',
     firstName: user?.name?.split(' ')[0] || '',
@@ -213,8 +221,11 @@ export default function Checkout() {
     }
   };
 
-  // Calculate shipping rate when pincode is at least 6 chars
-  const calculateShipping = useCallback(async (pincode, total) => {
+  // Calculate shipping rate when pincode is at least 6 chars. Passes cart
+  // items so vendor-specific shipping overrides are quoted here — matching
+  // what order creation will actually charge — instead of only ever quoting
+  // the global zone-table rate.
+  const calculateShipping = useCallback(async (pincode, total, items) => {
     if (!pincode || pincode.length < 5) {
       setShippingRate(null);
       setShippingInfo(null);
@@ -222,7 +233,7 @@ export default function Checkout() {
     }
     setShippingLoading(true);
     try {
-      const res = await orderService.calculateShipping({ pincode, total });
+      const res = await orderService.calculateShipping({ pincode, total, items });
       const d = res.data;
       setShippingRate(d.rate ?? 0);
       setShippingInfo({ zone: d.zone, estimatedDays: d.estimatedDays, message: d.message });
@@ -234,15 +245,16 @@ export default function Checkout() {
     }
   }, []);
 
-  // Debounce shipping calculation when pincode changes
+  // Debounce shipping calculation when pincode or cart contents change
   useEffect(() => {
     const pincode = formData.zip;
+    const items = cartItems.map(item => ({ productId: item.id || item._id, quantity: item.quantity }));
     if (shippingTimerRef.current) clearTimeout(shippingTimerRef.current);
     shippingTimerRef.current = setTimeout(() => {
-      calculateShipping(pincode, cartTotal);
+      calculateShipping(pincode, cartTotal, items);
     }, 600);
     return () => clearTimeout(shippingTimerRef.current);
-  }, [formData.zip, cartTotal, calculateShipping]);
+  }, [formData.zip, cartTotal, cartItems, calculateShipping]);
 
   // Auto-fill city/state from pincode when user types manually
   useEffect(() => {
@@ -273,8 +285,32 @@ export default function Checkout() {
   const offerDiscount  = offerData?.totalDiscount ?? 0;
   const couponDiscount = couponData?.discount ?? 0;
   const baseTotal      = cartTotal - offerDiscount - couponDiscount;
-  const taxAmount      = taxSettings?.taxIncluded ? 0 : Math.round(Math.max(0, baseTotal) * ((taxSettings?.gstRate ?? 0) / 100));
-  const finalTotal     = Math.max(0, baseTotal) + taxAmount + shipping;
+
+  // Per-line GST — each item uses its own product.gstRate when set, falling
+  // back to the store-wide default, matching pricing.service.computeLineGst
+  // on the server so the estimate shown here doesn't drift from what the
+  // order actually gets charged/invoiced.
+  const taxAmount = taxSettings?.taxIncluded ? 0 : cartItems.reduce((sum, item) => {
+    const rate = typeof item.gstRate === 'number' ? item.gstRate : (taxSettings?.gstRate ?? 0);
+    return sum + Math.round(item.price * item.quantity * (rate / 100));
+  }, 0);
+
+  const giftWrapTotal = cartItems.reduce((sum, item) => {
+    const itemId = item.id || item._id;
+    return addOns[itemId]?.giftWrap && item.giftWrap?.enabled
+      ? sum + item.giftWrap.price * item.quantity
+      : sum;
+  }, 0);
+
+  const bundleSavings = cartItems.reduce((sum, item) => {
+    const itemId = item.id || item._id;
+    if (!addOns[itemId]?.bundle || !item.bundleOffer?.enabled || !item.bundleOffer?.withProduct) return sum;
+    const companion = item.bundleOffer.withProduct;
+    const normalCombined = (item.discountPrice || item.price) + (companion.discountPrice || companion.price);
+    return sum + Math.max(0, normalCombined - (item.bundleOffer.bundlePrice ?? normalCombined));
+  }, 0);
+
+  const finalTotal = Math.max(0, baseTotal) + taxAmount + shipping + giftWrapTotal;
 
   const buildShippingAddress = () => ({
     name:    `${formData.firstName} ${formData.lastName}`.trim(),
@@ -284,17 +320,28 @@ export default function Checkout() {
     state:   formData.state,
     pincode: formData.zip,
     country: 'IN',
+    ...(typeof formData.lat === 'number' && typeof formData.lng === 'number'
+      ? { lat: formData.lat, lng: formData.lng }
+      : {}),
   });
 
   const buildOrderPayload = () => ({
-    items: cartItems.map(item => ({
-      product:    item.id || item._id,
-      quantity:   item.quantity,
-      attributes: {
-        ...(item.selectedColor ? { color: item.selectedColor } : {}),
-        ...(item.selectedSize  ? { size:  item.selectedSize }  : {}),
-      },
-    })),
+    items: cartItems.map(item => {
+      const itemId = item.id || item._id;
+      const selected = addOns[itemId] || {};
+      return {
+        product:    itemId,
+        quantity:   item.quantity,
+        attributes: {
+          ...(item.selectedColor ? { color: item.selectedColor } : {}),
+          ...(item.selectedSize  ? { size:  item.selectedSize }  : {}),
+        },
+        ...(item.giftWrap?.enabled && selected.giftWrap ? { giftWrap: { selected: true } } : {}),
+        ...(item.bundleOffer?.enabled && item.bundleOffer?.withProduct && selected.bundle
+          ? { bundleOffer: { selected: true, withProduct: item.bundleOffer.withProduct._id || item.bundleOffer.withProduct } }
+          : {}),
+      };
+    }),
     shippingAddress: buildShippingAddress(),
     paymentMethod:   selectedGw || 'cod',
     couponCode:      couponCode || undefined,
@@ -571,7 +618,7 @@ export default function Checkout() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                   {/* Contact info */}
-                  <div className="col-span-2 space-y-3">
+                  <div className="md:col-span-2 space-y-3">
                     <label className="text-[11px] font-bold uppercase text-ink tracking-widest">Email Address</label>
                     <input type="email" placeholder="name@example.com" className="w-full bg-surface border border-border-minimal rounded-sm py-4 px-6 focus:border-accent outline-none text-[13px] font-medium" value={formData.email} onChange={field('email')} />
                   </div>
@@ -583,13 +630,13 @@ export default function Checkout() {
                     <label className="text-[11px] font-bold uppercase text-ink tracking-widest">Last Name</label>
                     <input type="text" placeholder="Doe" className="w-full bg-surface border border-border-minimal rounded-sm py-4 px-6 focus:border-accent outline-none text-[13px] font-medium" value={formData.lastName} onChange={field('lastName')} />
                   </div>
-                  <div className="col-span-2 space-y-3">
+                  <div className="md:col-span-2 space-y-3">
                     <label className="text-[11px] font-bold uppercase text-ink tracking-widest">Phone</label>
                     <input type="tel" placeholder="+91 98765 43210" className="w-full bg-surface border border-border-minimal rounded-sm py-4 px-6 focus:border-accent outline-none text-[13px] font-medium" value={formData.phone} onChange={field('phone')} />
                   </div>
 
                   {/* Map + smart search */}
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
                     <p className="text-[11px] font-bold uppercase text-ink tracking-widest mb-4">Delivery Location</p>
                     <React.Suspense fallback={
                       <div className="flex items-center justify-center h-75 border border-border-minimal rounded-sm bg-surface">
@@ -597,15 +644,15 @@ export default function Checkout() {
                       </div>
                     }>
                       <LocationPicker
-                        onSelect={({ address, city, state, zip }) =>
-                          setFormData(prev => ({ ...prev, address, city, state, zip }))
+                        onSelect={({ address, city, state, zip, lat, lng }) =>
+                          setFormData(prev => ({ ...prev, address, city, state, zip, lat, lng }))
                         }
                       />
                     </React.Suspense>
                   </div>
 
                   {/* Manual overrides — pre-filled by the picker, still editable */}
-                  <div className="col-span-2 space-y-3">
+                  <div className="md:col-span-2 space-y-3">
                     <label className="text-[11px] font-bold uppercase text-ink tracking-widest">Street Address</label>
                     <input type="text" placeholder="House/Flat no., Street" className="w-full bg-surface border border-border-minimal rounded-sm py-4 px-6 focus:border-accent outline-none text-[13px] font-medium" value={formData.address} onChange={field('address')} />
                   </div>
@@ -806,17 +853,57 @@ export default function Checkout() {
             <div className="bg-surface p-12 border border-border-minimal">
               <h3 className="text-[11px] font-bold text-ink mb-10 uppercase tracking-[0.2em]">Summary</h3>
               <div className="space-y-6 mb-10 max-h-96 overflow-y-auto pr-4">
-                {cartItems.map((item, idx) => (
-                  <div key={idx} className="flex gap-5 pb-6 border-b border-border-minimal last:border-0 last:pb-0">
-                    <div className="w-16 h-16 bg-white border border-border-minimal shrink-0 overflow-hidden">
-                      <img src={getImageUrl(item.images?.[0] || '')} className="w-full h-full object-cover" referrerPolicy="no-referrer" alt={item.name} />
+                {cartItems.map((item, idx) => {
+                  const itemId = item.id || item._id;
+                  const selected = addOns[itemId] || {};
+                  return (
+                    <div key={idx} className="pb-6 border-b border-border-minimal last:border-0 last:pb-0">
+                      <div className="flex gap-5">
+                        <div className="w-16 h-16 bg-white border border-border-minimal shrink-0 overflow-hidden">
+                          <img src={getImageUrl(item.images?.[0] || '')} className="w-full h-full object-cover" referrerPolicy="no-referrer" alt={item.name} />
+                        </div>
+                        <div className="grow flex flex-col justify-center">
+                          <p className="font-bold text-[12px] text-ink uppercase tracking-tight mb-1 line-clamp-1">{item.name}</p>
+                          <p className="text-[11px] text-subtle font-bold uppercase tracking-wider">{item.quantity} × {formatPrice(item.price)}</p>
+                        </div>
+                      </div>
+
+                      {item.giftWrap?.enabled && (
+                        <label className="flex items-center gap-2 mt-3 pl-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!!selected.giftWrap}
+                            onChange={() => toggleGiftWrap(itemId)}
+                            className="w-3.5 h-3.5"
+                          />
+                          <span className="text-[11px] font-medium text-ink">
+                            Add gift wrapping (+{formatPrice(item.giftWrap.price)})
+                          </span>
+                        </label>
+                      )}
+
+                      {item.bundleOffer?.enabled && item.bundleOffer?.withProduct && (
+                        <label className="flex items-start gap-2 mt-3 pl-2 cursor-pointer bg-accent/5 border border-accent/20 rounded-sm p-3">
+                          <input
+                            type="checkbox"
+                            checked={!!selected.bundle}
+                            onChange={() => toggleBundle(itemId)}
+                            className="w-3.5 h-3.5 mt-0.5"
+                          />
+                          <span className="text-[11px] font-medium text-ink">
+                            Bundle with <strong>{item.bundleOffer.withProduct.name}</strong> for{' '}
+                            {formatPrice(item.bundleOffer.bundlePrice)} total
+                            {' '}<span className="text-success font-bold">
+                              (save {formatPrice(Math.max(0,
+                                (item.price + (item.bundleOffer.withProduct.discountPrice || item.bundleOffer.withProduct.price)) - item.bundleOffer.bundlePrice
+                              ))})
+                            </span>
+                          </span>
+                        </label>
+                      )}
                     </div>
-                    <div className="grow flex flex-col justify-center">
-                      <p className="font-bold text-[12px] text-ink uppercase tracking-tight mb-1 line-clamp-1">{item.name}</p>
-                      <p className="text-[11px] text-subtle font-bold uppercase tracking-wider">{item.quantity} × {formatPrice(item.price)}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Applied Offers */}
@@ -868,13 +955,25 @@ export default function Checkout() {
                 )}
                 {!taxSettings?.taxIncluded && taxAmount > 0 && (
                   <div className="flex justify-between text-[13px] font-medium text-subtle">
-                    <span>GST ({taxSettings?.gstRate}%)</span>
+                    <span>GST</span>
                     <span className="text-ink">{formatPrice(taxAmount)}</span>
                   </div>
                 )}
                 {taxSettings?.taxIncluded && taxSettings?.gstRate > 0 && (
                   <div className="text-[11px] text-subtle font-medium">
-                    Incl. {taxSettings.gstRate}% GST
+                    Incl. GST
+                  </div>
+                )}
+                {giftWrapTotal > 0 && (
+                  <div className="flex justify-between text-[13px] font-medium text-subtle">
+                    <span>Gift Wrapping</span>
+                    <span className="text-ink">{formatPrice(giftWrapTotal)}</span>
+                  </div>
+                )}
+                {bundleSavings > 0 && (
+                  <div className="flex justify-between text-[13px] font-medium text-success">
+                    <span>Bundle Savings</span>
+                    <span>-{formatPrice(bundleSavings)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-[13px] font-medium text-subtle items-center">
