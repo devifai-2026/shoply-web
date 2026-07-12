@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useAppearance } from '../context/AppearanceContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { ShoppingCart, Heart, ChevronRight, ShieldCheck, Truck, RotateCcw, ShoppingBag, Package, Store, Star } from 'lucide-react';
 import { cn } from '../lib/utils';
 import ProductCard from '../components/product/ProductCard';
@@ -21,6 +22,7 @@ export default function ProductDetail() {
   const lgCols = { 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4', 5: 'lg:grid-cols-5' }[gridCols] || 'lg:grid-cols-4';
   const { user } = useAuth();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { success: toastSuccess } = useToast();
   const activeOffer = useActiveOffer();
   const [product, setProduct]           = useState(null);
   const [related, setRelated]           = useState([]);
@@ -81,6 +83,7 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity, selectedColor || undefined, selectedSize || undefined);
+    toastSuccess('Added to bag.');
   };
 
   const handleWishlist = async () => {

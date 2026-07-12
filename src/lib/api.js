@@ -10,16 +10,30 @@ export class ApiError extends Error {
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('customer_token');
-  const res = await fetch(BASE_URL + path, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
-  const data = await res.json();
-  if (!res.ok) throw new ApiError(data.message || 'Request failed', res.status);
+  let res;
+  try {
+    res = await fetch(BASE_URL + path, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+      },
+      ...options,
+    });
+  } catch {
+    // fetch() itself rejected — no connection reached the server at all.
+    throw new ApiError('Check your internet connection and try again.', 0);
+  }
+
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    // Non-JSON body (e.g. an HTML error page from a proxy/500) — no usable message.
+    data = null;
+  }
+
+  if (!res.ok) throw new ApiError(data?.message || 'Request failed', res.status);
   return data;
 }
 

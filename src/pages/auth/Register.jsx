@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 export default function Register() {
@@ -8,6 +10,7 @@ export default function Register() {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
   const { register } = useAuth();
+  const { success: toastSuccess, error: toastError } = useToast();
   const navigate     = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,9 +19,12 @@ export default function Register() {
     setLoading(true);
     try {
       await register(formData);
+      toastSuccess('Account created. Welcome!');
       navigate('/account');
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      const msg = getErrorMessage(err, 'Registration failed. Please try again.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }

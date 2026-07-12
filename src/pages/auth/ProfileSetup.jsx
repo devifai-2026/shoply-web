@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 export default function ProfileSetup() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { user, updateProfile } = useAuth();
+  const { error: toastError } = useToast();
 
   const nextPath = location.state?.nextPath || '/account';
 
@@ -26,7 +29,9 @@ export default function ProfileSetup() {
       if (Object.keys(updates).length > 0) await updateProfile(updates);
       navigate(nextPath, { replace: true });
     } catch (err) {
-      setError(err.message || 'Could not save profile. Please try again.');
+      const msg = getErrorMessage(err, 'Could not save profile. Please try again.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }

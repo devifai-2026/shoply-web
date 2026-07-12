@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { customerAuthService } from '../../services/customerAuth';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 
 export default function ForgotPassword() {
   const [email, setEmail]     = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const [sent, setSent]       = useState(false);
+  const { error: toastError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +20,9 @@ export default function ForgotPassword() {
       await customerAuthService.forgotPassword(email);
       setSent(true);
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      const msg = getErrorMessage(err, 'Something went wrong. Please try again.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }

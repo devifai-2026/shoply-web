@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { cn } from '../../lib/utils';
 import { motion } from 'motion/react';
 import { getImageUrl } from '../../lib/api';
@@ -17,6 +18,7 @@ export default function ProductCard({ product, activeOffer }) {
   const { formatPrice, productCardStyle } = useAppearance();
   const { user } = useAuth();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { success: toastSuccess } = useToast();
 
   const productId  = product._id || product.id;
   const wishlisted = isInWishlist(productId);
@@ -42,7 +44,10 @@ export default function ProductCard({ product, activeOffer }) {
     await toggleWishlist(product);
   };
 
-  const handleAddToCart = () => addToCart(product, cartQty, firstColor, firstSize);
+  const handleAddToCart = () => {
+    addToCart(product, cartQty, firstColor, firstSize);
+    toastSuccess('Added to bag.');
+  };
   const handleClick = () => trackEvent('product_click', { productId });
 
   const shared = {

@@ -40,9 +40,9 @@ export default function FlashSale() {
           <div className="container mx-auto px-10 text-center">
             <div className="inline-flex items-center gap-3 border border-white/20 px-8 py-3 mb-10">
               <Zap className="w-4 h-4 text-white" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Flash Sale</span>
+              <span className="text-[10px] font-normal uppercase tracking-[0.011em]">Flash Sale</span>
             </div>
-            <h1 className="text-[48px] lg:text-[100px] font-light tracking-tight mb-12 leading-none uppercase">No Active Sale</h1>
+            <h1 className="font-heading text-[48px] lg:text-[100px] font-normal tracking-tight mb-12 leading-none uppercase">No Active Sale</h1>
             <p className="text-white/40 text-[14px]">Check back soon for our next limited-time offer.</p>
           </div>
         </div>
@@ -58,26 +58,26 @@ export default function FlashSale() {
         <div className="container mx-auto px-10 text-center relative z-10">
           <div className="inline-flex items-center gap-3 border border-white/20 px-8 py-3 mb-10">
             <Zap className="w-4 h-4 text-white uppercase" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Temporal Limitation</span>
+            <span className="text-[10px] font-normal uppercase tracking-[0.011em]">Temporal Limitation</span>
           </div>
-          <h1 className="text-[48px] lg:text-[100px] font-light tracking-tight mb-12 leading-none uppercase">
+          <h1 className="font-heading text-[48px] lg:text-[100px] font-normal tracking-tight mb-12 leading-none uppercase">
             {sale.title || 'Periodic Offer'}
           </h1>
           {timeLeft && (
             <div className="flex items-center justify-center gap-8 lg:gap-20">
               <div className="flex flex-col items-center">
-                <span className="text-[32px] lg:text-[48px] font-light">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/40 mt-2">Hours</span>
+                <span className="text-[32px] lg:text-[48px] font-normal">{String(timeLeft.hours).padStart(2, '0')}</span>
+                <span className="text-[10px] uppercase font-normal tracking-[0.011em] text-white/40 mt-2">Hours</span>
               </div>
               <span className="text-3xl font-extralight opacity-20">/</span>
               <div className="flex flex-col items-center">
-                <span className="text-[32px] lg:text-[48px] font-light">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/40 mt-2">Minutes</span>
+                <span className="text-[32px] lg:text-[48px] font-normal">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                <span className="text-[10px] uppercase font-normal tracking-[0.011em] text-white/40 mt-2">Minutes</span>
               </div>
               <span className="text-3xl font-extralight opacity-20">/</span>
               <div className="flex flex-col items-center">
-                <span className="text-[32px] lg:text-[48px] font-light">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/40 mt-2">Seconds</span>
+                <span className="text-[32px] lg:text-[48px] font-normal">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                <span className="text-[10px] uppercase font-normal tracking-[0.011em] text-white/40 mt-2">Seconds</span>
               </div>
             </div>
           )}
@@ -87,8 +87,8 @@ export default function FlashSale() {
       <div className="container mx-auto px-10 mt-32">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 pb-8 border-b border-border-minimal">
           <div>
-            <h2 className="text-[32px] font-light text-ink tracking-tight mb-2">Curated Reductions</h2>
-            <p className="text-subtle text-[13px] font-medium">{products.length} selections</p>
+            <h2 className="font-heading text-[32px] font-normal text-ink tracking-tight mb-2">Curated Reductions</h2>
+            <p className="text-subtle text-[13px] font-normal">{products.length} selections</p>
           </div>
         </div>
         <div className={`grid grid-cols-1 sm:grid-cols-2 ${lgCols} gap-12`}>

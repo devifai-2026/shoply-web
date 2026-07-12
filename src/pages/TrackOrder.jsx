@@ -7,17 +7,17 @@ import {
 } from 'lucide-react';
 import { orderService } from '../services/orderService';
 import { useAppearance } from '../context/AppearanceContext';
-import { cn } from '../lib/utils';
+import { cn, getErrorMessage } from '../lib/utils';
 
 const FLOW_STEPS = ['pending', 'processing', 'shipped', 'delivered'];
 
 const STATUS_META = {
-  pending:    { label: 'Pending',    Icon: Clock,        color: 'text-amber-500',   bg: 'bg-amber-50',   border: 'border-amber-200' },
-  processing: { label: 'Processing', Icon: Package,      color: 'text-blue-500',    bg: 'bg-blue-50',    border: 'border-blue-200'  },
-  shipped:    { label: 'Shipped',    Icon: Truck,        color: 'text-indigo-500',  bg: 'bg-indigo-50',  border: 'border-indigo-200'},
-  delivered:  { label: 'Delivered',  Icon: CheckCircle2, color: 'text-green-600',   bg: 'bg-green-50',   border: 'border-green-200' },
-  cancelled:  { label: 'Cancelled',  Icon: XCircle,      color: 'text-red-500',     bg: 'bg-red-50',     border: 'border-red-200'   },
-  refunded:   { label: 'Refunded',   Icon: RotateCcw,    color: 'text-subtle',      bg: 'bg-surface',    border: 'border-border-minimal' },
+  pending:    { label: 'Pending',    Icon: Clock,        color: 'text-ink',      border: 'border-border-minimal' },
+  processing: { label: 'Processing', Icon: Package,      color: 'text-ink',      border: 'border-border-minimal' },
+  shipped:    { label: 'Shipped',    Icon: Truck,        color: 'text-ink',      border: 'border-border-minimal' },
+  delivered:  { label: 'Delivered',  Icon: CheckCircle2, color: 'text-success',  border: 'border-border-minimal' },
+  cancelled:  { label: 'Cancelled',  Icon: XCircle,      color: 'text-danger',   border: 'border-border-minimal' },
+  refunded:   { label: 'Refunded',   Icon: RotateCcw,    color: 'text-subtle',   border: 'border-border-minimal' },
 };
 
 function formatDate(dateStr) {
@@ -74,7 +74,7 @@ export default function TrackOrder() {
       setResult(res.data);
       navigate(`/track/${trimmed}`, { replace: true });
     } catch (e) {
-      setError(e.message || 'Tracking number not found. Please check and try again.');
+      setError(getErrorMessage(e, 'Tracking number not found. Please check and try again.'));
     } finally {
       setLoading(false);
     }

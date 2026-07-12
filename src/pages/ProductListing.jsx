@@ -18,7 +18,7 @@ function FilterSection({ title, children, defaultOpen = true }) {
         onClick={() => setOpen(o => !o)}
         className="flex items-center justify-between w-full mb-4"
       >
-        <span className="font-bold text-ink uppercase tracking-widest text-[11px]">{title}</span>
+        <span className="font-normal text-ink uppercase tracking-[0.011em] text-[11px]">{title}</span>
         <ChevronDown className={cn('w-4 h-4 text-subtle transition-transform duration-200', open && 'rotate-180')} />
       </button>
       {open && children}
@@ -34,10 +34,10 @@ function CheckPill({ label, checked, onChange }) {
           type="checkbox"
           checked={checked}
           onChange={onChange}
-          className="w-4 h-4 border border-border-minimal rounded-xs checked:bg-accent checked:border-accent appearance-none transition-all"
+          className="w-4 h-4 border border-border-minimal rounded-[4px] checked:bg-accent checked:border-accent appearance-none transition-all"
         />
         {checked && (
-          <span className="absolute inset-0 flex items-center justify-center text-white text-[9px] font-bold pointer-events-none">✓</span>
+          <span className="absolute inset-0 flex items-center justify-center text-white text-[9px] font-medium pointer-events-none">✓</span>
         )}
       </div>
       <span className="text-[13px] text-subtle group-hover:text-ink transition-colors leading-tight">{label}</span>
@@ -196,7 +196,7 @@ export default function ProductListing() {
         <div className="space-y-1">
           <button
             onClick={clearFilters}
-            className={cn('w-full text-left text-[13px] py-0.5 transition-colors', !categorySlug ? 'text-ink font-bold' : 'text-subtle hover:text-ink')}
+            className={cn('w-full text-left text-[13px] py-0.5 transition-colors', !categorySlug ? 'text-ink font-medium' : 'text-subtle hover:text-ink')}
           >
             All Products
           </button>
@@ -207,7 +207,7 @@ export default function ProductListing() {
                 onClick={() => selectCategory(cat.slug)}
                 className={cn(
                   'w-full text-left text-[13px] py-0.5 transition-colors flex items-center justify-between group',
-                  categorySlug === cat.slug && !subcatSlug ? 'text-ink font-bold' : 'text-subtle hover:text-ink'
+                  categorySlug === cat.slug && !subcatSlug ? 'text-ink font-medium' : 'text-subtle hover:text-ink'
                 )}
               >
                 <span>{cat.icon && <span className="mr-1">{cat.icon}</span>}{cat.name}</span>
@@ -223,7 +223,7 @@ export default function ProductListing() {
                         onClick={() => selectSubcat(cat.slug, sub.slug)}
                         className={cn(
                           'w-full text-left text-[12px] py-0.5 transition-colors flex items-center justify-between group',
-                          subcatSlug === sub.slug && !childSlug ? 'text-ink font-semibold' : 'text-subtle hover:text-ink'
+                          subcatSlug === sub.slug && !childSlug ? 'text-ink font-medium' : 'text-subtle hover:text-ink'
                         )}
                       >
                         <span>{sub.name}</span>
@@ -239,7 +239,7 @@ export default function ProductListing() {
                               onClick={() => selectChild(cat.slug, sub.slug, child.slug)}
                               className={cn(
                                 'w-full text-left text-[12px] py-0.5 transition-colors',
-                                childSlug === child.slug ? 'text-ink font-semibold' : 'text-subtle hover:text-ink'
+                                childSlug === child.slug ? 'text-ink font-medium' : 'text-subtle hover:text-ink'
                               )}
                             >
                               {child.name}
@@ -329,7 +329,7 @@ export default function ProductListing() {
                 key={size}
                 onClick={() => toggleMulti('size', size)}
                 className={cn(
-                  'px-3 py-1.5 border text-[12px] font-medium transition-all',
+                  'px-3 py-1.5 rounded-full border text-[12px] font-medium transition-all',
                   selectedSizes.includes(size)
                     ? 'border-accent bg-accent text-white'
                     : 'border-border-minimal text-subtle hover:border-ink hover:text-ink'
@@ -361,7 +361,7 @@ export default function ProductListing() {
       {hasFilters && (
         <button
           onClick={clearFilters}
-          className="w-full text-[12px] font-bold uppercase tracking-widest text-ink border border-ink py-2 hover:bg-ink hover:text-white transition-all"
+          className="w-full text-[12px] font-normal uppercase tracking-[0.011em] text-ink border border-ink rounded-[4px] py-2 hover:bg-ink hover:text-white transition-all"
         >
           Clear All Filters
         </button>
@@ -378,7 +378,7 @@ export default function ProductListing() {
         <div className="container mx-auto px-10">
           {/* Breadcrumb */}
           {categorySlug && (
-            <div className="flex items-center gap-2 text-[11px] text-subtle font-medium uppercase tracking-widest mb-4">
+            <div className="flex items-center gap-2 text-[11px] text-subtle font-normal uppercase tracking-[0.011em] mb-4">
               <button onClick={clearFilters} className="hover:text-ink transition-colors">All</button>
               {activeCategory && (
                 <>
@@ -407,8 +407,8 @@ export default function ProductListing() {
 
           <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4">
             <div>
-              <h1 className="text-[32px] font-light tracking-tight text-ink mb-1">{activeLabel}</h1>
-              <p className="text-subtle text-sm font-medium">
+              <h1 className="font-heading text-[32px] font-normal tracking-tight text-ink mb-1">{activeLabel}</h1>
+              <p className="text-subtle text-sm font-normal">
                 {loading ? 'Loading…' : `${pagination?.total ?? products.length} products`}
               </p>
             </div>
@@ -417,25 +417,25 @@ export default function ProductListing() {
               {/* Active filter chips */}
               <div className="hidden md:flex flex-wrap gap-2">
                 {selectedBrands.map(b => (
-                  <span key={b} className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-bold uppercase tracking-wide px-3 py-1">
+                  <span key={b} className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-normal uppercase tracking-[0.011em] rounded-full px-3 py-1">
                     {b}
                     <button onClick={() => toggleMulti('brand', b)}><X className="w-3 h-3" /></button>
                   </span>
                 ))}
                 {selectedSizes.map(s => (
-                  <span key={s} className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-bold uppercase tracking-wide px-3 py-1">
+                  <span key={s} className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-normal uppercase tracking-[0.011em] rounded-full px-3 py-1">
                     {s}
                     <button onClick={() => toggleMulti('size', s)}><X className="w-3 h-3" /></button>
                   </span>
                 ))}
                 {selectedColors.map(c => (
-                  <span key={c} className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-bold uppercase tracking-wide px-3 py-1">
+                  <span key={c} className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-normal uppercase tracking-[0.011em] rounded-full px-3 py-1">
                     {c}
                     <button onClick={() => toggleMulti('color', c)}><X className="w-3 h-3" /></button>
                   </span>
                 ))}
                 {inStock && (
-                  <span className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-bold uppercase tracking-wide px-3 py-1">
+                  <span className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-normal uppercase tracking-[0.011em] rounded-full px-3 py-1">
                     In Stock
                     <button onClick={() => setParam('inStock', '')}><X className="w-3 h-3" /></button>
                   </span>
@@ -444,7 +444,7 @@ export default function ProductListing() {
 
               <button
                 onClick={() => setIsMobileFilterOpen(true)}
-                className="lg:hidden flex items-center gap-2 border border-border-minimal px-4 py-2 font-semibold text-[12px] uppercase tracking-wider"
+                className="lg:hidden flex items-center gap-2 border border-border-minimal rounded-[4px] px-4 py-2 font-normal text-[12px] uppercase tracking-[0.011em]"
               >
                 <Filter className="w-4 h-4" /> Filters
                 {hasFilters && <span className="w-2 h-2 rounded-full bg-accent" />}
@@ -454,7 +454,7 @@ export default function ProductListing() {
                 <select
                   value={sortBy}
                   onChange={e => setParam('sort', e.target.value)}
-                  className="w-full appearance-none bg-white border border-border-minimal px-4 py-2 font-medium text-[13px] outline-none focus:border-accent cursor-pointer text-ink"
+                  className="w-full appearance-none bg-surface border border-border-minimal rounded-[4px] px-4 py-2 font-normal text-[13px] outline-none focus:border-accent cursor-pointer text-ink"
                 >
                   <option value="newest">Newest</option>
                   <option value="price-asc">Price: Low → High</option>
@@ -479,25 +479,25 @@ export default function ProductListing() {
           {/* Product grid */}
           <div className="grow">
 
-            {/* Active offer banner */}
+            {/* Active offer banner — neutral treatment, icon-differentiated (matches Home.jsx Special Offers) */}
             {activeOffer && (() => {
-              const BANNER = {
-                buy_x_get_y: { bg: 'bg-purple-50 border-purple-200', text: 'text-purple-800', sub: 'text-purple-600', Icon: ShoppingBag, iconCls: 'text-purple-600' },
-                bundle:      { bg: 'bg-blue-50 border-blue-200',     text: 'text-blue-800',   sub: 'text-blue-600',   Icon: Package,     iconCls: 'text-blue-600' },
-              }[activeOffer.type];
-              if (!BANNER) return null;
+              const ICON_MAP = { buy_x_get_y: ShoppingBag, bundle: Package };
+              const Icon = ICON_MAP[activeOffer.type];
+              if (!Icon) return null;
               const desc = activeOffer.type === 'buy_x_get_y'
                 ? `Buy ${activeOffer.buyQty}, get ${activeOffer.getQty} absolutely free — applied automatically when you add to cart.`
                 : `Add any ${activeOffer.bundleCount} items and pay only ₹${activeOffer.bundlePrice} — discount applied at checkout.`;
               return (
-                <div className={`flex items-start gap-4 border rounded-sm p-4 mb-8 ${BANNER.bg}`}>
-                  <BANNER.Icon className={`w-5 h-5 mt-0.5 shrink-0 ${BANNER.iconCls}`} />
+                <div className="flex items-start gap-4 border border-border-minimal bg-surface rounded-[4px] p-4 mb-8">
+                  <div className="w-10 h-10 bg-ink flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
                   <div>
-                    <p className={`text-[13px] font-bold ${BANNER.text}`}>{activeOffer.title}</p>
-                    <p className={`text-[12px] mt-0.5 ${BANNER.sub}`}>{desc}</p>
+                    <p className="text-[13px] font-medium text-ink">{activeOffer.title}</p>
+                    <p className="text-[12px] mt-0.5 text-subtle">{desc}</p>
                   </div>
                   {activeOffer.badge && (
-                    <span className={`ml-auto shrink-0 text-[10px] font-black px-2.5 py-1 rounded-full text-white uppercase tracking-widest ${activeOffer.type === 'buy_x_get_y' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                    <span className="ml-auto shrink-0 text-[10px] font-normal px-2.5 py-1 rounded-[4px] bg-ink text-white uppercase tracking-[0.011em]">
                       {activeOffer.badge}
                     </span>
                   )}
@@ -530,7 +530,7 @@ export default function ProductListing() {
                     <button
                       disabled={pagination.page <= 1}
                       onClick={() => { setParam('page', pagination.page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className="w-10 h-10 text-[13px] font-medium border border-border-minimal text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="w-10 h-10 rounded-[4px] text-[13px] font-normal border border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       ‹
                     </button>
@@ -539,10 +539,10 @@ export default function ProductListing() {
                         key={p}
                         onClick={() => { setParam('page', p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                         className={cn(
-                          'w-10 h-10 text-[13px] font-medium border transition-all',
+                          'w-10 h-10 rounded-[4px] text-[13px] font-normal border transition-all',
                           pagination.page === p
                             ? 'bg-ink text-white border-ink'
-                            : 'border-border-minimal text-subtle hover:border-ink hover:text-ink'
+                            : 'border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink'
                         )}
                       >
                         {p}
@@ -551,7 +551,7 @@ export default function ProductListing() {
                     <button
                       disabled={pagination.page >= pagination.pages}
                       onClick={() => { setParam('page', pagination.page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className="w-10 h-10 text-[13px] font-medium border border-border-minimal text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="w-10 h-10 rounded-[4px] text-[13px] font-normal border border-border-minimal bg-surface text-subtle hover:border-ink hover:text-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       ›
                     </button>
@@ -559,13 +559,13 @@ export default function ProductListing() {
                 )}
               </>
             ) : (
-              <div className="bg-surface p-20 text-center border border-dashed border-border-minimal">
+              <div className="bg-surface p-20 text-center border border-dashed border-border-minimal rounded-[4px]">
                 <SlidersHorizontal className="w-12 h-12 text-subtle mx-auto mb-6" />
-                <h3 className="text-xl font-medium text-ink mb-2 tracking-tight">No products found</h3>
+                <h3 className="font-heading text-xl font-normal text-ink mb-2 tracking-tight">No products found</h3>
                 <p className="text-subtle text-sm mb-8 max-w-sm mx-auto leading-relaxed">
                   Try adjusting or clearing your filters.
                 </p>
-                <button onClick={clearFilters} className="border border-ink px-8 py-3 text-[12px] font-bold uppercase tracking-widest hover:bg-ink hover:text-white transition-all">
+                <button onClick={clearFilters} className="border border-ink rounded-[4px] px-8 py-3 text-[12px] font-normal uppercase tracking-[0.011em] hover:bg-ink hover:text-white transition-all">
                   Clear Filters
                 </button>
               </div>
@@ -586,10 +586,10 @@ export default function ProductListing() {
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               onClick={e => e.stopPropagation()}
-              className="absolute inset-y-0 left-0 w-[85%] max-w-95 bg-bg flex flex-col shadow-2xl"
+              className="absolute inset-y-0 left-0 w-[85%] max-w-95 bg-bg border-r border-border-minimal flex flex-col"
             >
               <div className="flex items-center justify-between p-6 border-b border-border-minimal">
-                <span className="font-bold text-ink uppercase tracking-widest text-[13px]">Filters</span>
+                <span className="font-normal text-ink uppercase tracking-[0.011em] text-[13px]">Filters</span>
                 <button onClick={() => setIsMobileFilterOpen(false)}>
                   <X className="w-5 h-5 text-ink" />
                 </button>
@@ -600,7 +600,7 @@ export default function ProductListing() {
               <div className="p-6 border-t border-border-minimal">
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="w-full bg-ink text-white py-4 text-[12px] font-bold uppercase tracking-widest"
+                  className="w-full bg-accent text-white rounded-[4px] py-4 text-[12px] font-normal uppercase tracking-[0.011em]"
                 >
                   Show {pagination?.total ?? products.length} Results
                 </button>

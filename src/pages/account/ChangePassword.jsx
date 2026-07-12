@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { customerAuthService } from '../../services/customerAuth';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function ChangePassword() {
@@ -10,6 +12,7 @@ export default function ChangePassword() {
   const [saving, setSaving]                   = useState(false);
   const [saved, setSaved]                     = useState(false);
   const [error, setError]                     = useState('');
+  const { error: toastError, success: toastSuccess } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,12 +27,15 @@ export default function ChangePassword() {
     try {
       await customerAuthService.changePassword(currentPassword, newPassword);
       setSaved(true);
+      toastSuccess('Password changed.');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to change password.');
+      const msg = getErrorMessage(err, 'Failed to change password.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setSaving(false);
     }

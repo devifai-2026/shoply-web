@@ -21,12 +21,13 @@ export default function BrandsPage() {
   return (
     <div className="bg-bg min-h-screen pb-32">
       <div className="bg-surface border-b border-border-minimal py-24 lg:py-40">
-        <div className="container mx-auto px-10 text-center max-w-3xl">
-          <h1 className="font-heading text-[40px] lg:text-[64px] font-normal text-ink tracking-tight mb-8">Collaborations</h1>
-          <p className="text-subtle text-[14px] font-normal mb-12 max-w-xl mx-auto leading-loose">
+        <div className="container mx-auto px-10 max-w-3xl">
+          <h1 className="font-heading text-[40px] lg:text-[64px] font-normal text-ink tracking-tight mb-2">Collaborations</h1>
+          <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mt-2 mb-8" />
+          <p className="text-subtle text-[14px] font-normal mb-12 max-w-xl leading-loose">
             We maintain direct synergies with global designers to curate collections of unparalleled precision and certified integrity.
           </p>
-          <div className="relative max-w-sm mx-auto">
+          <div className="relative max-w-sm">
             <input
               type="text"
               placeholder="Query brand index..."
@@ -59,7 +60,7 @@ export default function BrandsPage() {
               <Link
                 key={brand._id}
                 to={`/search?q=${brand.name}`}
-                className="bg-white border border-border-minimal group transition-all duration-500 overflow-hidden flex flex-col h-full"
+                className="bg-surface border border-border-minimal group transition-all duration-500 overflow-hidden flex flex-col h-full hover:border-ink"
               >
                 <div className="relative h-64 overflow-hidden bg-surface flex items-center justify-center border-b border-border-minimal">
                   {brand.logo ? (
@@ -70,15 +71,15 @@ export default function BrandsPage() {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-[24px] font-light text-subtle uppercase tracking-widest">{brand.name}</span>
+                    <span className="text-[24px] font-normal text-subtle uppercase tracking-[0.011em]">{brand.name}</span>
                   )}
                 </div>
                 <div className="p-10 flex flex-col flex-grow">
-                  <h3 className="text-[18px] font-semibold text-ink mb-6 uppercase tracking-tight">{brand.name}</h3>
-                  <p className="text-subtle text-[13px] mb-10 leading-relaxed flex-grow font-medium">
+                  <h3 className="text-[18px] font-medium text-ink mb-6 uppercase tracking-tight">{brand.name}</h3>
+                  <p className="text-subtle text-[13px] mb-10 leading-relaxed flex-grow font-normal">
                     {brand.description || 'Premium quality products from this brand.'}
                   </p>
-                  <div className="flex items-center gap-4 text-ink font-bold uppercase tracking-[0.2em] text-[10px]">
+                  <div className="flex items-center gap-4 text-accent font-normal uppercase tracking-[0.011em] text-[10px]">
                     Catalog <ArrowRight className="w-4 h-4 stroke-[2]" />
                   </div>
                 </div>

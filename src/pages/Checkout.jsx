@@ -14,7 +14,8 @@ import {
 } from '../services/paymentService';
 import { getImageUrl } from '../lib/api';
 import { Truck, CreditCard, CheckCircle2, Lock, Smartphone, Wallet, Globe, Loader2 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getErrorMessage } from '../lib/utils';
+import { useToast } from '../context/ToastContext';
 const LocationPicker = React.lazy(() => import('../components/LocationPicker'));
 
 // ─── Gateway icons map ────────────────────────────────────────────────────────
@@ -85,7 +86,7 @@ const StripeCardForm = ({ clientSecret, publishableKey, onSuccess, onError }) =>
         id="stripe-card-element"
         className="w-full bg-surface border border-border-minimal rounded-sm py-4 px-6 min-h-12.5"
       />
-      {cardError && <p className="text-red-500 text-[12px] font-medium">{cardError}</p>}
+      {cardError && <p className="text-sale text-[12px] font-normal">{cardError}</p>}
       <button
         onClick={handlePay}
         disabled={processing}
@@ -104,6 +105,7 @@ export default function Checkout() {
   const { user }                    = useAuth();
   const { formatPrice, taxSettings } = useAppearance();
   const navigate                    = useNavigate();
+  const { error: toastError, success: toastSuccess } = useToast();
 
   const [step, setStep]               = useState(1);
   const [submitting, setSubmitting]   = useState(false);
@@ -203,8 +205,10 @@ export default function Checkout() {
     try {
       const res = await storefrontService.validateCoupon(couponCode.trim(), cartTotal - offerDiscount);
       setCouponData(res.data);
+      toastSuccess('Coupon applied.');
     } catch (e) {
-      setCouponError(e.message || 'Invalid coupon');
+      const msg = getErrorMessage(e, 'Invalid coupon.');
+      setCouponError(msg);
       setCouponData(null);
     }
   };
@@ -316,7 +320,9 @@ export default function Checkout() {
       clearCart();
       navigate(`/checkout/confirmation/${order.orderNumber || order._id}`);
     } catch (e) {
-      setError(e.message || 'Failed to place order.');
+      const msg = getErrorMessage(e, 'Failed to place order. Please try again.');
+      setError(msg);
+      toastError(msg);
       setSubmitting(false);
     }
   };
@@ -368,7 +374,9 @@ export default function Checkout() {
       clearCart();
       navigate(`/checkout/confirmation/${orderData.orderNumber || orderId}`);
     } catch (e) {
-      setError(e.message || 'Payment failed. Please try again.');
+      const msg = getErrorMessage(e, 'Payment failed. Please try again.');
+      setError(msg);
+      toastError(msg);
       setSubmitting(false);
     }
   };
@@ -391,7 +399,9 @@ export default function Checkout() {
       setPendingOrderId(orderId);
       setStripeData(initRes.data);
     } catch (e) {
-      setError(e.message || 'Failed to initialize payment.');
+      const msg = getErrorMessage(e, 'Failed to initialize payment.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -410,7 +420,9 @@ export default function Checkout() {
       const order = orderRes.data;
       navigate(`/checkout/confirmation/${order.orderNumber || order._id}`);
     } catch (e) {
-      setError(e.message || 'Payment verification failed.');
+      const msg = getErrorMessage(e, 'Payment verification failed.');
+      setError(msg);
+      toastError(msg);
       setSubmitting(false);
     }
   };
@@ -450,7 +462,9 @@ export default function Checkout() {
         returnUrl: `${window.location.origin}/checkout/confirmation/${orderData.orderNumber || orderId}`,
       });
     } catch (e) {
-      setError(e.message || 'Payment failed.');
+      const msg = getErrorMessage(e, 'Payment failed. Please try again.');
+      setError(msg);
+      toastError(msg);
       setSubmitting(false);
     }
   };
@@ -485,7 +499,9 @@ export default function Checkout() {
         submitRedirectForm(initRes.data.formUrl, initRes.data.params);
       }
     } catch (e) {
-      setError(e.message || 'Payment initiation failed.');
+      const msg = getErrorMessage(e, 'Payment initiation failed.');
+      setError(msg);
+      toastError(msg);
       setSubmitting(false);
     }
   };
@@ -530,12 +546,12 @@ export default function Checkout() {
             <React.Fragment key={i}>
               <div className="flex items-center gap-4">
                 <div className={cn(
-                  'w-8 h-8 rounded-full border flex items-center justify-center text-[12px] font-bold transition-all',
+                  'w-8 h-8 rounded-full border flex items-center justify-center text-[12px] font-medium transition-all',
                   step >= i ? 'border-accent bg-accent text-white' : 'border-border-minimal text-subtle'
                 )}>
                   {step > i ? <CheckCircle2 className="w-4 h-4" /> : i}
                 </div>
-                <span className={cn('hidden sm:inline font-bold text-[11px] uppercase tracking-[0.2em]', step >= i ? 'text-ink' : 'text-subtle')}>
+                <span className={cn('hidden sm:inline font-normal text-[11px] uppercase tracking-[0.011em]', step >= i ? 'text-ink' : 'text-subtle')}>
                   {i === 1 ? 'Delivery' : i === 2 ? 'Payment' : 'Review'}
                 </span>
               </div>
@@ -546,7 +562,7 @@ export default function Checkout() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* Main Form */}
-          <div className="lg:col-span-7 bg-white p-12 border border-border-minimal">
+          <div className="lg:col-span-7 bg-surface p-12 border border-border-minimal">
 
             {/* ── Step 1: Shipping ── */}
             {step === 1 && (
@@ -642,7 +658,7 @@ export default function Checkout() {
                       )}
                     </div>
                     {pincodeAutoFilled && (
-                      <p className="text-[11px] text-green-600 font-semibold">City &amp; State auto-filled</p>
+                      <p className="text-[11px] text-success font-semibold">City &amp; State auto-filled</p>
                     )}
                     {shippingLoading && (
                       <p className="text-[11px] text-subtle font-medium flex items-center gap-1">
@@ -650,7 +666,7 @@ export default function Checkout() {
                       </p>
                     )}
                     {!shippingLoading && shippingRate === 0 && formData.zip.length >= 6 && (
-                      <p className="text-[11px] text-green-600 font-semibold">✓ Free shipping to this area</p>
+                      <p className="text-[11px] text-success font-semibold">✓ Free shipping to this area</p>
                     )}
                     {!shippingLoading && shippingRate > 0 && (
                       <p className="text-[11px] text-ink font-semibold">
@@ -709,7 +725,7 @@ export default function Checkout() {
                       clientSecret={stripeData.clientSecret}
                       publishableKey={stripeData.publishableKey}
                       onSuccess={handleStripeSuccess}
-                      onError={(msg) => setError(msg)}
+                      onError={(msg) => toastError(getErrorMessage({ message: msg }, 'Payment failed. Please try again.'))}
                     />
                   </div>
                 )}
@@ -757,12 +773,13 @@ export default function Checkout() {
                       </p>
                     </div>
                   </div>
-                  {error && <p className="text-red-500 text-[13px] font-medium">{error}</p>}
                 </div>
               </div>
             )}
 
-            {error && step !== 3 && <p className="mt-6 text-red-500 text-[13px] font-medium">{error}</p>}
+            {/* Field-validation errors (Step 1) stay inline near the form; payment/order
+                failures are surfaced via toast instead, to avoid a duplicate inline box. */}
+            {error && step === 1 && <p className="mt-6 text-sale text-[13px] font-medium">{error}</p>}
 
             <div className="mt-16 flex justify-between border-t border-border-minimal pt-10">
               {step > 1 ? (
@@ -809,7 +826,7 @@ export default function Checkout() {
                     <div key={o.offerId} className="flex items-center justify-between bg-green-50 border border-green-200 px-4 py-2.5 rounded-sm">
                       <div>
                         <p className="text-[11px] font-black text-green-700 uppercase tracking-widest">{o.badge || 'OFFER'}</p>
-                        <p className="text-[11px] text-green-600 font-medium">{o.description}</p>
+                        <p className="text-[11px] text-success font-medium">{o.description}</p>
                       </div>
                       <span className="text-[12px] font-bold text-green-700">-{formatPrice(o.discount)}</span>
                     </div>
@@ -831,7 +848,7 @@ export default function Checkout() {
                     Apply
                   </button>
                 </div>
-                {couponData   && <p className="text-green-600 text-[11px] font-bold mt-2">Coupon: -{formatPrice(couponDiscount)}</p>}
+                {couponData   && <p className="text-success text-[11px] font-bold mt-2">Coupon: -{formatPrice(couponDiscount)}</p>}
                 {couponError  && <p className="text-red-500 text-[11px] font-bold mt-2">{couponError}</p>}
               </div>
 
@@ -840,12 +857,12 @@ export default function Checkout() {
                   <span>Subtotal</span><span className="text-ink">{formatPrice(cartTotal)}</span>
                 </div>
                 {offerDiscount > 0 && (
-                  <div className="flex justify-between text-[13px] font-medium text-green-600">
+                  <div className="flex justify-between text-[13px] font-medium text-success">
                     <span>Offer Savings</span><span>-{formatPrice(offerDiscount)}</span>
                   </div>
                 )}
                 {couponData && couponDiscount > 0 && (
-                  <div className="flex justify-between text-[13px] font-medium text-green-600">
+                  <div className="flex justify-between text-[13px] font-medium text-success">
                     <span>Coupon Discount</span><span>-{formatPrice(couponDiscount)}</span>
                   </div>
                 )}

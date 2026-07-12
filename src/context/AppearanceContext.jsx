@@ -159,9 +159,10 @@ export function AppearanceProvider({ children }) {
   const storePhone   = appearance?.phone        || '';
   const storeAddress = appearance?.address      || '';
   const socialLinks  = appearance?.social       ?? {};
+  const policies     = appearance?.policies     ?? {};
 
   return (
-    <AppearanceContext.Provider value={{ appearance, isSectionEnabled, gridCols, productCardStyle, headerConfig, footerConfig, logo, homepageContent, formatPrice, taxSettings, storeName, supportEmail, storePhone, storeAddress, socialLinks }}>
+    <AppearanceContext.Provider value={{ appearance, isSectionEnabled, gridCols, productCardStyle, headerConfig, footerConfig, logo, homepageContent, formatPrice, taxSettings, storeName, supportEmail, storePhone, storeAddress, socialLinks, policies }}>
       {children}
     </AppearanceContext.Provider>
   );

@@ -15,8 +15,8 @@ import NewArrivalCard from '../components/product/NewArrivalCard';
 import RecentlyViewedCard from '../components/product/RecentlyViewedCard';
 import {
   X, Zap, Mail, ChevronRight, ArrowLeft,
-  Truck, Shield, RefreshCw, Headphones, Star,
-  Smartphone, Play, Gift, ShoppingBag, Package, Tag,
+  Truck, Shield, RefreshCw, Headphones,
+  Gift, ShoppingBag, Package, Tag,
 } from 'lucide-react';
 
 const TRUST_ITEMS = [
@@ -24,19 +24,6 @@ const TRUST_ITEMS = [
   { Icon: Shield,     label: 'Secure Payment' },
   { Icon: RefreshCw,  label: 'Easy Returns' },
   { Icon: Headphones, label: '24/7 Support' },
-];
-
-
-const TESTIMONIALS = [
-  { name: 'Priya Sharma', rating: 5, text: 'Absolutely love the quality! Fast delivery and great packaging. Will definitely order again.', avatar: 'P' },
-  { name: 'Rahul Verma',  rating: 5, text: 'Best online shopping experience. Wide variety, genuine products, and super-fast shipping.', avatar: 'R' },
-  { name: 'Anita Roy',    rating: 4, text: 'Smooth checkout process and a very helpful customer support team. Highly recommended!', avatar: 'A' },
-];
-
-const ACTIVITIES = [
-  { label: 'Hiking',    seed: 'activity-hiking',    link: '/search?q=hiking' },
-  { label: 'Climbing',  seed: 'activity-climbing',  link: '/search?q=climbing' },
-  { label: 'Camping',   seed: 'activity-camping',   link: '/search?q=camping' },
 ];
 
 // Shared section heading with the short (not full-width) decorative underline.
@@ -69,6 +56,7 @@ export default function Home() {
   const [announcementOn, setAnnouncementOn] = useState(true);
 
   const { isSectionEnabled, homepageContent, gridCols } = useAppearance();
+  const categoryTiles = homepageContent.categoryTiles || [];
   const lgCols = { 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4', 5: 'lg:grid-cols-5' }[gridCols] || 'lg:grid-cols-4';
 
   useEffect(() => {
@@ -84,11 +72,8 @@ export default function Home() {
   }, []);
 
   const flashProducts = flashSale?.products?.slice(0, 8) || [];
-  const promoText     = homepageContent.promoStrip || 'Free shipping on orders over ₹999 · Easy returns · New arrivals every week';
-  const promoBanners  = homepageContent.promoBanners?.length ? homepageContent.promoBanners : [
-    { subtitle: 'New Season',       title: 'Gear Up for the Crag',  cta: 'Shop Now', link: '/products' },
-    { subtitle: 'Performance Tech', title: 'Alpine Ready Apparel',   cta: 'Explore',  link: '/products' },
-  ];
+  const promoText     = homepageContent.promoStrip || '';
+  const promoBanners  = homepageContent.promoBanners || [];
   const saleEndTime   = flashSale?.endTime || new Date(Date.now() + 86_400_000).toISOString();
   const countdown     = useCountdown(saleEndTime);
 
@@ -98,7 +83,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════════
           1. ANNOUNCEMENT BAR
       ══════════════════════════════════════════════════════════ */}
-      {announcementOn && (
+      {announcementOn && promoText && (
         <div className="relative bg-ink text-bg py-2.5 text-center">
           <p className="text-xs font-normal tracking-[0.009em] px-10">{promoText}</p>
           <button
@@ -194,35 +179,6 @@ export default function Home() {
               </div>
             </SwiperSlide>
 
-            {/* Static Slide 3 — Brand Campaign: Mammut */}
-            <SwiperSlide key="hero-brand">
-              <div className="relative w-full h-full bg-surface flex items-center">
-                <img
-                  src="https://picsum.photos/seed/mammut-brand/1920/700"
-                  alt="Mammut Collection"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-linear-to-r from-ink/80 via-ink/40 to-transparent" />
-                <div className="relative z-10 container mx-auto px-6 md:px-16">
-                  <span className="block text-[10px] font-normal uppercase tracking-[0.15em] text-bg/50 mb-4">New Brand Arrivals</span>
-                  <p className="text-sm font-normal uppercase tracking-[0.011em] text-bg/70 mb-2">Mammut</p>
-                  <h2 className="font-heading text-3xl sm:text-5xl md:text-6xl font-normal text-bg leading-[1.23] mb-2 italic">
-                    Built For<br />The Mountain.
-                  </h2>
-                  <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mb-6" />
-                  <p className="text-sm text-bg/60 mb-8 max-w-sm hidden sm:block">
-                    Swiss precision since 1862. Alpine gear engineered for the world's most demanding environments.
-                  </p>
-                  <Link
-                    to="/search?q=mammut"
-                    className="inline-flex items-center gap-2 border border-bg text-bg px-8 py-3 text-xs font-normal uppercase tracking-[0.009em] hover:bg-bg hover:text-ink transition-colors"
-                  >
-                    Explore Collection <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </SwiperSlide>
           </Swiper>
 
           <button className="hero-prev absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-bg/90 border border-border-minimal flex items-center justify-center hover:bg-bg transition-colors">
@@ -343,6 +299,12 @@ export default function Home() {
                   const discountPct = origPrice && origPrice > salePrice
                     ? Math.round(((origPrice - salePrice) / origPrice) * 100)
                     : 0;
+                  // Real "sold %" from actual soldCount vs. total ever stocked
+                  // (soldCount + remaining stock) — omitted entirely when the
+                  // product has no sales/stock data to derive it from.
+                  const soldCount = product.soldCount || 0;
+                  const totalUnits = soldCount + (product.stock || 0);
+                  const soldPercent = totalUnits > 0 ? Math.round((soldCount / totalUnits) * 100) : null;
                   return (
                     <SwiperSlide key={pid}>
                       <FlashSaleCard
@@ -351,7 +313,7 @@ export default function Home() {
                         discountedPrice={salePrice}
                         originalPrice={origPrice}
                         discountPercent={discountPct}
-                        soldPercent={(salePrice % 40) + 45}
+                        soldPercent={soldPercent}
                         productUrl={`/products/${product.slug || pid}`}
                       />
                     </SwiperSlide>
@@ -423,23 +385,29 @@ export default function Home() {
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          SHOP BY ACTIVITY  (3 image cards)
+          SHOP BY CATEGORY TILES — admin-configured (Appearance panel),
+          hidden entirely when the tenant hasn't set any up.
       ══════════════════════════════════════════════════════════ */}
+      {categoryTiles.length > 0 && (
       <section className="py-10 border-b border-border-minimal">
         <div className="container mx-auto px-4">
-          <SectionHeading>Shop By Activity</SectionHeading>
-          <div className="grid grid-cols-3 gap-3 md:gap-4">
-            {ACTIVITIES.map(({ label, seed, link }) => (
-              <Link key={label} to={link} className="relative h-44 md:h-64 overflow-hidden group bg-surface border border-border-minimal">
-                <img
-                  src={`https://picsum.photos/seed/${seed}/600/400`}
-                  alt={label}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  referrerPolicy="no-referrer"
-                />
+          <SectionHeading>Shop by Category</SectionHeading>
+          <div className={`grid gap-3 md:gap-4`} style={{ gridTemplateColumns: `repeat(${Math.min(categoryTiles.length, 3)}, minmax(0, 1fr))` }}>
+            {categoryTiles.map((tile, i) => (
+              <Link key={i} to={tile.link || '/products'} className="relative h-44 md:h-64 overflow-hidden group bg-surface border border-border-minimal">
+                {tile.image ? (
+                  <img
+                    src={getImageUrl(tile.image)}
+                    alt={tile.label}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-surface" />
+                )}
                 <div className="absolute inset-0 bg-linear-to-t from-ink/70 via-ink/10 to-transparent" />
                 <div className="absolute bottom-4 left-4">
-                  <h3 className="font-heading text-lg md:text-xl font-normal text-bg leading-none mb-1">{label}</h3>
+                  <h3 className="font-heading text-lg md:text-xl font-normal text-bg leading-none mb-1">{tile.label}</h3>
                   <span className="text-[10px] text-bg/70 uppercase tracking-[0.011em] flex items-center gap-0.5">
                     Shop Now <ChevronRight className="w-3 h-3" />
                   </span>
@@ -449,33 +417,38 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ══════════════════════════════════════════════════════════
-          PROMOTIONAL BANNERS (dynamic 2–5)
+          PROMOTIONAL BANNERS (dynamic 2–5) — admin-configured only;
+          hidden entirely when the tenant hasn't set any up.
       ══════════════════════════════════════════════════════════ */}
+      {promoBanners.length > 0 && (
       <section className="py-0">
         {/* First banner — full width */}
         <div className="relative h-56 sm:h-72 md:h-80 overflow-hidden">
           <img
-            src={promoBanners[0]?.image ? getImageUrl(promoBanners[0].image) : 'https://picsum.photos/seed/promo-wide/1920/600'}
-            alt={promoBanners[0]?.title || 'Promotion'}
-            className="w-full h-full object-cover"
+            src={promoBanners[0].image ? getImageUrl(promoBanners[0].image) : undefined}
+            alt={promoBanners[0].title || 'Promotion'}
+            className="w-full h-full object-cover bg-surface"
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-ink/45" />
           <div className="absolute bottom-7 left-6 md:left-14">
-            <span className="block text-[10px] font-normal uppercase tracking-[0.011em] text-bg/60 mb-2">
-              {promoBanners[0]?.subtitle || 'Special Offer'}
-            </span>
+            {promoBanners[0].subtitle && (
+              <span className="block text-[10px] font-normal uppercase tracking-[0.011em] text-bg/60 mb-2">
+                {promoBanners[0].subtitle}
+              </span>
+            )}
             <h3 className="font-heading text-2xl md:text-4xl font-normal text-bg mb-2 leading-[1.27]">
-              {promoBanners[0]?.title || 'Gear Up For The Crag'}
+              {promoBanners[0].title}
             </h3>
             <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mb-4" />
             <Link
-              to={promoBanners[0]?.link || '/products'}
+              to={promoBanners[0].link || '/products'}
               className="inline-flex items-center gap-2 bg-bg text-ink px-6 py-2.5 text-xs font-normal uppercase tracking-[0.009em] hover:bg-accent hover:text-bg transition-colors"
             >
-              {promoBanners[0]?.cta || 'Shop Now'} <ChevronRight className="w-3 h-3" />
+              {promoBanners[0].cta || 'Shop Now'} <ChevronRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
@@ -485,16 +458,18 @@ export default function Home() {
             {promoBanners.slice(1).map((banner, i) => (
               <div key={i} className="relative h-56 md:h-72 overflow-hidden group bg-surface">
                 <img
-                  src={banner.image ? getImageUrl(banner.image) : `https://picsum.photos/seed/promo-${i + 2}/800/600`}
+                  src={banner.image ? getImageUrl(banner.image) : undefined}
                   alt={banner.title || `Banner ${i + 2}`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 bg-surface"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-ink/65 via-ink/10 to-transparent" />
                 <div className="absolute bottom-6 left-6">
-                  <span className="block text-[10px] font-normal uppercase tracking-[0.011em] text-bg/60 mb-1">
-                    {banner.subtitle || 'New Season'}
-                  </span>
+                  {banner.subtitle && (
+                    <span className="block text-[10px] font-normal uppercase tracking-[0.011em] text-bg/60 mb-1">
+                      {banner.subtitle}
+                    </span>
+                  )}
                   <h3 className="font-heading text-xl font-normal text-bg mb-3 leading-[1.27]">
                     {banner.title || 'Shop Collection'}
                   </h3>
@@ -510,6 +485,7 @@ export default function Home() {
           </div>
         )}
       </section>
+      )}
 
       {/* ══════════════════════════════════════════════════════════
           PRODUCT GRID — BEST SELLERS  (standard ProductCard)
@@ -532,7 +508,7 @@ export default function Home() {
                     brand={product.brand}
                     productName={product.name}
                     image={getImageUrl(product.images?.[0] || '')}
-                    rating={product.rating || 4.2}
+                    rating={product.rating || 0}
                     reviewCount={product.reviewCount || 0}
                     discountedPrice={salePrice}
                     originalPrice={origPrice}
@@ -618,36 +594,6 @@ export default function Home() {
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          BRAND CAMPAIGN BANNER — "Shop The Mammut Collection"
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative h-60 md:h-80 overflow-hidden border-b border-border-minimal">
-        <img
-          src="https://picsum.photos/seed/brand-mammut-campaign/1920/600"
-          alt="Mammut Collection"
-          className="w-full h-full object-cover"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 bg-ink/55" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <span className="block text-[10px] font-normal uppercase tracking-[0.15em] text-bg/50 mb-3">Featured Brand</span>
-          <p className="text-sm font-normal uppercase tracking-[0.011em] text-bg/70 mb-1">Mammut</p>
-          <h2 className="font-heading text-2xl md:text-4xl font-normal text-bg mb-2 leading-[1.27]">
-            Shop The Mammut Collection
-          </h2>
-          <span className="block w-16 h-[3px] bg-[var(--color-accent-decorative)] mb-4" />
-          <p className="text-xs text-bg/50 mb-6 max-w-sm">
-            Swiss precision since 1862 — alpine gear engineered for the world's most demanding environments.
-          </p>
-          <Link
-            to="/search?q=mammut"
-            className="inline-flex items-center gap-2 bg-bg text-ink px-8 py-3 text-xs font-normal uppercase tracking-[0.009em] hover:bg-accent hover:text-bg transition-colors"
-          >
-            Explore Collection <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
           RECENTLY VIEWED  (RecentlyViewedCard — image+name+price only)
       ══════════════════════════════════════════════════════════ */}
       {recentlyViewed.length > 0 && (
@@ -685,67 +631,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      {/* ══════════════════════════════════════════════════════════
-          TESTIMONIALS
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-12 border-b border-border-minimal bg-surface/30">
-        <div className="container mx-auto px-4">
-          <SectionHeading center>What Our Customers Say</SectionHeading>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            {TESTIMONIALS.map(({ name, rating, text, avatar }) => (
-              <div key={name} className="bg-bg border border-border-minimal p-6 flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-ink text-bg flex items-center justify-center text-lg font-normal mb-3">{avatar}</div>
-                <p className="text-sm font-medium text-ink mb-1">{name}</p>
-                <div className="flex gap-0.5 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < rating ? 'text-rating fill-current' : 'text-border-minimal'}`} />
-                  ))}
-                </div>
-                <p className="text-xs text-subtle leading-relaxed">"{text}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          APP DOWNLOAD BANNER
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-12 border-b border-border-minimal">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <div>
-              <h2 className="font-heading text-2xl md:text-3xl font-normal text-ink mb-2 leading-[1.27]">Shop Faster on the App</h2>
-              <span className="heading-accent-rule" />
-              <p className="text-sm text-subtle mb-7 max-w-sm leading-relaxed">
-                Exclusive app-only deals, faster checkout, and real-time order tracking — all in one place.
-              </p>
-              <div className="flex gap-3 flex-wrap">
-                <button className="flex items-center gap-3 border border-ink px-5 py-3 hover:bg-ink hover:text-bg transition-colors group">
-                  <Play className="w-4 h-4 text-ink group-hover:text-bg shrink-0" />
-                  <div className="text-left">
-                    <div className="text-[9px] font-normal uppercase tracking-[0.011em] text-ink group-hover:text-bg">Get it on</div>
-                    <div className="text-xs font-medium text-ink group-hover:text-bg">Google Play</div>
-                  </div>
-                </button>
-                <button className="flex items-center gap-3 border border-ink px-5 py-3 hover:bg-ink hover:text-bg transition-colors group">
-                  <Smartphone className="w-4 h-4 text-ink group-hover:text-bg shrink-0" />
-                  <div className="text-left">
-                    <div className="text-[9px] font-normal uppercase tracking-[0.011em] text-ink group-hover:text-bg">Download on the</div>
-                    <div className="text-xs font-medium text-ink group-hover:text-bg">App Store</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-            <div className="flex justify-center md:justify-end">
-              <div className="w-40 h-72 md:w-48 md:h-80 border border-border-minimal overflow-hidden bg-surface">
-                <img src="https://picsum.photos/seed/app-mockup/300/600" alt="App preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════════════════════════
           NEWSLETTER

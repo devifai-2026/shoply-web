@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 export default function Login() {
@@ -9,6 +11,7 @@ export default function Login() {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
   const { login } = useAuth();
+  const { error: toastError } = useToast();
   const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
   const nextPath       = searchParams.get('next') || '/account';
@@ -21,7 +24,9 @@ export default function Login() {
       await login(email, password);
       navigate(nextPath, { replace: true });
     } catch (err) {
-      setError(err.message || 'Invalid email or password.');
+      const msg = getErrorMessage(err, 'Invalid email or password.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }

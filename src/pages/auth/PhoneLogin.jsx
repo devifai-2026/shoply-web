@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 export default function PhoneLogin() {
@@ -8,6 +10,7 @@ export default function PhoneLogin() {
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
   const { sendOtp }    = useAuth();
+  const { error: toastError } = useToast();
   const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
   const nextPath       = searchParams.get('next') || '/account';
@@ -25,7 +28,9 @@ export default function PhoneLogin() {
       const verificationId = await sendOtp(cleaned);
       navigate('/otp-verify', { state: { phone: cleaned, verificationId, nextPath } });
     } catch (err) {
-      setError(err.message || 'Failed to send OTP. Please try again.');
+      const msg = getErrorMessage(err, 'Failed to send OTP. Please try again.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }

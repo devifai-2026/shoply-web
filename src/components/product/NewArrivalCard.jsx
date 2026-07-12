@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { cn } from '../../lib/utils';
 
 export default function NewArrivalCard({
@@ -26,6 +27,7 @@ export default function NewArrivalCard({
   const { formatPrice } = useAppearance();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { user } = useAuth();
+  const { success: toastSuccess } = useToast();
 
   const productId = product?._id || product?.id;
   const wishlisted = productId ? isInWishlist(productId) : initialWishlisted;
@@ -52,36 +54,39 @@ export default function NewArrivalCard({
       return;
     }
     setSizeError(false);
-    if (product) addToCart(product, 1, product.colors?.[0], selectedSize);
+    if (product) {
+      addToCart(product, 1, product.colors?.[0], selectedSize);
+      toastSuccess('Added to bag.');
+    }
   };
 
   return (
     <Link
       to={productUrl}
-      className="group flex flex-col bg-bg border border-border-minimal h-full hover:scale-[1.02] transition-transform duration-200"
+      className="group flex flex-col bg-surface border border-border-minimal h-full transition-colors hover:border-ink"
     >
       {/* Image container */}
       <div className="relative aspect-square overflow-hidden bg-surface">
-        <span className="absolute top-2 left-2 z-10 bg-ink text-bg text-[10px] font-bold px-2 py-0.5 uppercase tracking-wide leading-none">
+        <span className="absolute top-2 left-2 z-10 bg-surface border border-border-minimal text-ink text-[10px] font-normal px-2 py-0.5 uppercase tracking-[0.011em] leading-none">
           New
         </span>
         <button
           type="button"
           onClick={handleWishlist}
-          className="absolute top-2 right-2 z-10 p-1.5 bg-bg/80 backdrop-blur-sm"
+          className="absolute top-2 right-2 z-10 p-1.5 bg-surface border border-border-minimal opacity-0 group-hover:opacity-100 transition-opacity hover:border-ink"
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-          <Heart className={cn('w-3.5 h-3.5', wishlisted ? 'fill-red-500 text-red-500' : 'text-subtle hover:text-ink')} />
+          <Heart className={cn('w-3.5 h-3.5 text-ink', wishlisted && 'fill-sale text-sale')} />
         </button>
         {image ? (
           <img
             src={image}
             alt={productName}
-            className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+            className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="w-full h-full bg-surface flex items-center justify-center text-subtle text-xs">
+          <div className="w-full h-full bg-surface flex items-center justify-center text-subtle text-xs uppercase tracking-[0.011em]">
             No image
           </div>
         )}
@@ -89,8 +94,8 @@ export default function NewArrivalCard({
 
       {/* Card body */}
       <div className="p-2.5 flex flex-col gap-1.5 grow">
-        <span className="text-[10px] text-subtle">{brand}</span>
-        <p className="text-xs font-medium text-ink line-clamp-1">{productName}</p>
+        <span className="text-[10px] text-subtle uppercase tracking-[0.011em] font-normal">{brand}</span>
+        <p className="text-xs font-normal text-ink line-clamp-1">{productName}</p>
 
         {/* Size selector */}
         {sizes.length > 0 && (
@@ -101,9 +106,9 @@ export default function NewArrivalCard({
                 type="button"
                 onClick={(e) => handleSizeSelect(e, size)}
                 className={cn(
-                  'w-7 h-7 flex items-center justify-center text-[9px] font-semibold border transition-colors',
+                  'w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-normal border transition-colors',
                   selectedSize === size
-                    ? 'border-ink bg-ink text-bg'
+                    ? 'border-ink bg-ink text-white'
                     : 'border-border-minimal text-subtle hover:border-ink hover:text-ink',
                 )}
               >
@@ -114,17 +119,17 @@ export default function NewArrivalCard({
         )}
 
         {/* Price — single, no strikethrough */}
-        <p className="text-sm font-bold text-ink">{formatPrice(price)}</p>
+        <p className="text-sm font-medium text-ink">{formatPrice(price)}</p>
 
         {sizeError && (
-          <p className="text-[10px] text-red-600">Please select a size</p>
+          <p className="text-[10px] text-sale">Please select a size</p>
         )}
 
         {/* Quick add — outlined style */}
         <button
           type="button"
           onClick={handleQuickAdd}
-          className="mt-auto w-full py-2 border border-ink text-ink text-[10px] font-bold uppercase tracking-wider hover:bg-ink hover:text-bg transition-colors"
+          className="mt-auto w-full py-2 border border-ink text-ink text-[10px] font-normal uppercase tracking-[0.011em] hover:bg-ink hover:text-white transition-colors"
         >
           + Quick add
         </button>

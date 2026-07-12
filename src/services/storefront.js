@@ -25,6 +25,9 @@ export const storefrontService = {
   getAppearance: () =>
     api.get('/storefront/appearance'),
 
+  getPaymentGateways: () =>
+    api.get('/storefront/payment-gateways'),
+
   getActiveOffers: () =>
     api.get('/storefront/offers'),
 

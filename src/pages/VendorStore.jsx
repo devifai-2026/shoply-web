@@ -82,13 +82,13 @@ export default function VendorStore() {
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-r from-ink to-ink/70" />
+          <div className="w-full h-full bg-ink" />
         )}
       </div>
 
       {/* Vendor header */}
       <div className="container mx-auto px-10">
-        <div className="bg-white border border-border-minimal -mt-16 relative z-10 p-10 flex flex-col sm:flex-row gap-8 items-start sm:items-center">
+        <div className="bg-surface border border-border-minimal -mt-16 relative z-10 p-10 flex flex-col sm:flex-row gap-8 items-start sm:items-center">
           <div className="w-24 h-24 bg-surface border border-border-minimal shrink-0 overflow-hidden flex items-center justify-center">
             {vendor.logo ? (
               <img
@@ -102,21 +102,21 @@ export default function VendorStore() {
             )}
           </div>
           <div className="flex-grow">
-            <h1 className="text-[28px] font-light text-ink tracking-tight">{vendor.storeName}</h1>
+            <h1 className="text-[28px] font-heading font-normal text-ink tracking-tight">{vendor.storeName}</h1>
             <div className="flex flex-wrap items-center gap-6 mt-2">
               {vendor.rating > 0 && (
-                <span className="flex items-center gap-1.5 text-[12px] font-bold text-ink">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink">
+                  <Star className="w-3.5 h-3.5 fill-rating text-rating" />
                   {Number(vendor.rating).toFixed(1)}
                 </span>
               )}
-              <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-subtle">
+              <span className="flex items-center gap-1.5 text-[11px] font-normal uppercase tracking-[0.011em] text-subtle">
                 <Package className="w-3.5 h-3.5" />
                 {vendor.productCount ?? products.length} {(vendor.productCount ?? products.length) === 1 ? 'product' : 'products'}
               </span>
             </div>
             {vendor.description && (
-              <p className="text-subtle text-[13px] font-medium leading-relaxed mt-4 max-w-2xl">
+              <p className="text-subtle text-[13px] font-normal leading-relaxed mt-4 max-w-2xl">
                 {vendor.description}
               </p>
             )}
@@ -124,7 +124,7 @@ export default function VendorStore() {
         </div>
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-[11px] font-bold text-subtle uppercase tracking-widest mt-12 mb-10">
+        <div className="flex items-center gap-2 text-[11px] font-normal text-subtle uppercase tracking-[0.011em] mt-12 mb-10">
           <Link to="/" className="hover:text-ink transition-colors">Home</Link>
           <ChevronRight className="w-3 h-3" />
           <span className="text-ink">{vendor.storeName}</span>
@@ -132,9 +132,9 @@ export default function VendorStore() {
 
         {/* Products */}
         {products.length === 0 ? (
-          <div className="py-24 text-center bg-white border border-border-minimal">
+          <div className="py-24 text-center bg-surface border border-border-minimal">
             <Package className="w-10 h-10 text-subtle mx-auto mb-6 stroke-[1.2]" />
-            <p className="text-subtle text-[13px] font-medium">This store has no products yet.</p>
+            <p className="text-subtle text-[13px] font-normal">This store has no products yet.</p>
           </div>
         ) : (
           <div className={cn(`grid grid-cols-1 sm:grid-cols-2 ${lgCols} gap-6`, loading && 'opacity-50 pointer-events-none')}>
@@ -148,18 +148,18 @@ export default function VendorStore() {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page <= 1 || loading}
-              className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest border border-border-minimal px-5 py-3 text-subtle hover:border-ink hover:text-ink transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              className="flex items-center gap-2 text-[11px] font-normal uppercase tracking-[0.011em] border border-border-minimal px-5 py-3 text-subtle hover:border-ink hover:text-ink transition-colors disabled:opacity-40 disabled:pointer-events-none"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               Prev
             </button>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-subtle">
+            <span className="text-[11px] font-normal uppercase tracking-[0.011em] text-subtle">
               Page {page} of {totalPages}
             </span>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages || loading}
-              className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest border border-border-minimal px-5 py-3 text-subtle hover:border-ink hover:text-ink transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              className="flex items-center gap-2 text-[11px] font-normal uppercase tracking-[0.011em] border border-border-minimal px-5 py-3 text-subtle hover:border-ink hover:text-ink transition-colors disabled:opacity-40 disabled:pointer-events-none"
             >
               Next
               <ChevronRight className="w-3.5 h-3.5" />

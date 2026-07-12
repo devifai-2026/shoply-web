@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Lock, ArrowLeft, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { customerAuthService } from '../../services/customerAuth';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -13,6 +15,7 @@ export default function ResetPassword() {
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
   const [done, setDone]                 = useState(false);
+  const { error: toastError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +36,9 @@ export default function ResetPassword() {
       }
       setDone(true);
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      const msg = getErrorMessage(err, 'Something went wrong. Please try again.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }

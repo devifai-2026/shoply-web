@@ -8,8 +8,9 @@ import {
 } from 'lucide-react';
 import { orderService } from '../../services/orderService';
 import { useAppearance } from '../../context/AppearanceContext';
+import { useToast } from '../../context/ToastContext';
 import { getImageUrl } from '../../lib/api';
-import { cn } from '../../lib/utils';
+import { cn, getErrorMessage } from '../../lib/utils';
 
 const FLOW_STEPS = ['pending', 'processing', 'shipped', 'delivered'];
 
@@ -152,6 +153,7 @@ export default function OrderDetail() {
   const { id }     = useParams();
   const navigate   = useNavigate();
   const { formatPrice, appearance } = useAppearance();
+  const { error: toastError, success: toastSuccess } = useToast();
 
   const [order, setOrder]               = useState(null);
   const [loading, setLoading]           = useState(true);
@@ -182,8 +184,11 @@ export default function OrderDetail() {
       const r = await orderService.cancelOrder(id);
       setOrder(r.data);
       setCancelConfirm(false);
+      toastSuccess('Order cancelled.');
     } catch (e) {
-      setCancelError(e.message || 'Cancellation failed. Please try again.');
+      const msg = getErrorMessage(e, 'Cancellation failed. Please try again.');
+      setCancelError(msg);
+      toastError(msg);
     } finally {
       setCancelling(false);
     }
@@ -203,10 +208,10 @@ export default function OrderDetail() {
   /* ── Loading skeleton ── */
   if (loading) {
     return (
-      <div className="bg-white border border-border-minimal animate-pulse">
+      <div className="bg-surface border border-border-minimal animate-pulse">
         <div className="p-10 border-b border-border-minimal h-20" />
         <div className="p-10 space-y-4">
-          {[1, 2, 3].map(i => <div key={i} className="h-12 bg-surface" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-12 bg-bg" />)}
         </div>
       </div>
     );
@@ -215,10 +220,10 @@ export default function OrderDetail() {
   /* ── Error state ── */
   if (error || !order) {
     return (
-      <div className="bg-white border border-border-minimal p-16 text-center">
+      <div className="bg-surface border border-border-minimal p-16 text-center">
         <AlertTriangle className="w-10 h-10 text-subtle mx-auto mb-6 stroke-[1.2]" />
-        <p className="text-ink font-semibold mb-2">{error || 'Order not found'}</p>
-        <Link to="/account/orders" className="text-[11px] font-bold uppercase tracking-widest text-subtle hover:text-ink transition-colors">
+        <p className="text-ink font-medium mb-2">{error || 'Order not found'}</p>
+        <Link to="/account/orders" className="text-[11px] font-normal uppercase tracking-[0.011em] text-subtle hover:text-ink transition-colors">
           ← Back to Orders
         </Link>
       </div>
@@ -243,22 +248,22 @@ export default function OrderDetail() {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="bg-white border border-border-minimal"
+        className="bg-surface border border-border-minimal"
       >
         {/* ── Header ── */}
         <div className="p-10 border-b border-border-minimal flex flex-col sm:flex-row sm:items-start justify-between gap-6">
           <div>
             <Link
               to="/account/orders"
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-subtle hover:text-ink transition-colors mb-5"
+              className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.011em] text-subtle hover:text-ink transition-colors mb-5"
             >
               <ArrowLeft className="w-3 h-3" />
               My Orders
             </Link>
-            <h2 className="text-[13px] font-bold text-ink uppercase tracking-[0.15em] mb-2">
+            <h2 className="text-[13px] font-normal text-ink uppercase tracking-[0.011em] mb-2">
               {order.orderNumber}
             </h2>
-            <p className="text-[11px] text-subtle font-medium">
+            <p className="text-[11px] text-subtle font-normal">
               Placed {new Date(order.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
               &nbsp;·&nbsp;{order.items.length} {order.items.length === 1 ? 'item' : 'items'}
             </p>
@@ -267,7 +272,7 @@ export default function OrderDetail() {
           <div className="flex items-center gap-4 shrink-0">
             <button
               onClick={handleDownloadInvoice}
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-subtle border border-border-minimal px-5 py-3 hover:border-ink hover:text-ink transition-colors"
+              className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.011em] text-subtle border border-border-minimal px-5 py-3 hover:border-ink hover:text-ink transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               Invoice
@@ -275,7 +280,7 @@ export default function OrderDetail() {
             {canCancel && (
               <button
                 onClick={() => setCancelConfirm(true)}
-                className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-subtle border border-border-minimal px-5 py-3 hover:border-red-400 hover:text-red-500 transition-colors"
+                className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.011em] text-subtle border border-border-minimal px-5 py-3 hover:border-danger hover:text-danger transition-colors"
               >
                 <XCircle className="w-3.5 h-3.5" />
                 Cancel
@@ -288,14 +293,14 @@ export default function OrderDetail() {
         <div className="px-10 py-6 border-b border-border-minimal flex items-center gap-3">
           <StatusIcon className={cn(
             'w-4 h-4 stroke-[1.5]',
-            order.status === 'delivered' ? 'text-green-600' :
-            order.status === 'cancelled' || order.status === 'refunded' ? 'text-red-500' :
+            order.status === 'delivered' ? 'text-success' :
+            order.status === 'cancelled' || order.status === 'refunded' ? 'text-danger' :
             'text-ink'
           )} />
           <span className={cn(
-            'text-[11px] font-bold uppercase tracking-[0.15em]',
-            order.status === 'delivered' ? 'text-green-600' :
-            order.status === 'cancelled' || order.status === 'refunded' ? 'text-red-500' :
+            'text-[11px] font-normal uppercase tracking-[0.011em]',
+            order.status === 'delivered' ? 'text-success' :
+            order.status === 'cancelled' || order.status === 'refunded' ? 'text-danger' :
             'text-ink'
           )}>
             {meta.label}
@@ -322,7 +327,7 @@ export default function OrderDetail() {
                         <StepIcon className="w-3.5 h-3.5 stroke-[1.5]" />
                       </div>
                       <span className={cn(
-                        'text-[9px] font-bold uppercase tracking-widest mt-2 text-center',
+                        'text-[9px] font-normal uppercase tracking-[0.011em] mt-2 text-center',
                         current ? 'text-ink' : done ? 'text-subtle' : 'text-subtle opacity-50'
                       )}>
                         {STATUS_META[step].label}
@@ -352,31 +357,31 @@ export default function OrderDetail() {
           <div className="px-10 py-8 border-b border-border-minimal bg-surface">
             <div className="flex items-center gap-2 mb-5">
               <Truck className="w-3.5 h-3.5 text-subtle stroke-[1.5]" />
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">Shipment Tracking</h3>
+              <h3 className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle">Shipment Tracking</h3>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-subtle mb-1">Tracking Number</p>
-                <p className="text-[22px] font-bold text-ink tracking-[0.06em] leading-none">{order.trackingNumber}</p>
+                <p className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle mb-1">Tracking Number</p>
+                <p className="text-[22px] font-medium text-ink tracking-[0.06em] leading-none">{order.trackingNumber}</p>
                 {order.courierName && (
-                  <p className="text-[11px] text-subtle mt-2 font-medium">via {order.courierName}</p>
+                  <p className="text-[11px] text-subtle mt-2 font-normal">via {order.courierName}</p>
                 )}
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   onClick={copyAwb}
-                  className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-border-minimal px-4 py-2.5 hover:border-ink hover:text-ink transition-colors text-subtle"
+                  className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.011em] border border-border-minimal px-4 py-2.5 hover:border-ink hover:text-ink transition-colors text-subtle"
                 >
                   {copied
-                    ? <><Check className="w-3 h-3 text-green-600" /><span className="text-green-600">Copied</span></>
+                    ? <><Check className="w-3 h-3 text-success" /><span className="text-success">Copied</span></>
                     : <><Copy className="w-3 h-3" />Copy</>
                   }
                 </button>
                 <Link
                   to={`/track/${order.trackingNumber}`}
-                  className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest bg-ink text-white px-5 py-2.5 hover:opacity-80 transition-opacity"
+                  className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.011em] bg-accent text-white px-5 py-2.5 hover:opacity-80 transition-opacity"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Track Order
@@ -385,7 +390,7 @@ export default function OrderDetail() {
                   href={`https://shiprocket.co/tracking/${order.trackingNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-border-minimal px-4 py-2.5 hover:border-ink hover:text-ink transition-colors text-subtle"
+                  className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.011em] border border-border-minimal px-4 py-2.5 hover:border-ink hover:text-ink transition-colors text-subtle"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Shiprocket
@@ -398,7 +403,7 @@ export default function OrderDetail() {
         {/* ── Order Items ── */}
         <div className="border-b border-border-minimal">
           <div className="px-10 py-5 border-b border-border-minimal">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">Order Items</h3>
+            <h3 className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle">Order Items</h3>
           </div>
           <div className="divide-y divide-border-minimal">
             {order.items.map(item => (
@@ -417,9 +422,9 @@ export default function OrderDetail() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-ink leading-snug truncate">{item.name}</p>
+                  <p className="text-[13px] font-medium text-ink leading-snug truncate">{item.name}</p>
                   {item.sku && (
-                    <p className="text-[10px] text-subtle font-bold uppercase tracking-widest mt-1">{item.sku}</p>
+                    <p className="text-[10px] text-subtle font-normal uppercase tracking-[0.011em] mt-1">{item.sku}</p>
                   )}
                   {item.attributes && Object.keys(item.attributes).length > 0 && (
                     <p className="text-[10px] text-subtle mt-1">
@@ -429,7 +434,7 @@ export default function OrderDetail() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-[12px] text-subtle mb-1">× {item.quantity}</p>
-                  <p className="text-[15px] font-semibold text-ink">{formatPrice(item.price * item.quantity)}</p>
+                  <p className="text-[15px] font-medium text-ink">{formatPrice(item.price * item.quantity)}</p>
                   <p className="text-[10px] text-subtle">{formatPrice(item.price)} each</p>
                 </div>
               </div>
@@ -443,9 +448,9 @@ export default function OrderDetail() {
           <div className="px-10 py-8">
             <div className="flex items-center gap-2 mb-5">
               <MapPin className="w-3.5 h-3.5 text-subtle stroke-[1.5]" />
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">Shipping Address</h3>
+              <h3 className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle">Shipping Address</h3>
             </div>
-            <p className="text-[13px] font-semibold text-ink mb-1">{addr.name}</p>
+            <p className="text-[13px] font-medium text-ink mb-1">{addr.name}</p>
             {addr.phone && <p className="text-[12px] text-subtle mb-3">{addr.phone}</p>}
             <p className="text-[12px] text-subtle leading-relaxed">
               {addrLine && <>{addrLine}<br /></>}
@@ -458,27 +463,27 @@ export default function OrderDetail() {
           <div className="px-10 py-8">
             <div className="flex items-center gap-2 mb-5">
               <CreditCard className="w-3.5 h-3.5 text-subtle stroke-[1.5]" />
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">Payment</h3>
+              <h3 className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle">Payment</h3>
             </div>
-            <p className="text-[13px] font-semibold text-ink mb-1">
+            <p className="text-[13px] font-medium text-ink mb-1">
               {PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod?.toUpperCase() || 'COD'}
             </p>
             <span className={cn(
-              'inline-block text-[9px] font-bold uppercase tracking-[0.1em] px-2.5 py-1 border mt-2',
-              order.paymentStatus === 'paid'     ? 'border-green-200 text-green-700 bg-green-50' :
-              order.paymentStatus === 'refunded' ? 'border-subtle text-subtle' :
+              'inline-block text-[9px] font-normal uppercase tracking-[0.011em] px-2.5 py-1 border mt-2',
+              order.paymentStatus === 'paid'     ? 'border-success/30 text-success bg-success/10' :
+              order.paymentStatus === 'refunded' ? 'border-border-minimal text-subtle' :
               'border-border-minimal text-subtle'
             )}>
               {order.paymentStatus}
             </span>
             {order.transactionId && (
-              <p className="text-[10px] text-subtle mt-3 font-medium">
+              <p className="text-[10px] text-subtle mt-3 font-normal">
                 Txn: {order.transactionId}
               </p>
             )}
             {order.couponCode && (
               <p className="text-[10px] text-subtle mt-2">
-                Coupon: <span className="font-bold text-ink">{order.couponCode}</span>
+                Coupon: <span className="font-medium text-ink">{order.couponCode}</span>
               </p>
             )}
           </div>
@@ -488,30 +493,30 @@ export default function OrderDetail() {
         <div className="px-10 py-8">
           <div className="ml-auto max-w-xs space-y-0">
             <div className="flex justify-between py-3 border-b border-border-minimal">
-              <span className="text-[11px] text-subtle font-bold uppercase tracking-widest">Subtotal</span>
-              <span className="text-[13px] font-semibold text-ink">{formatPrice(order.subtotal)}</span>
+              <span className="text-[11px] text-subtle font-normal uppercase tracking-[0.011em]">Subtotal</span>
+              <span className="text-[13px] font-medium text-ink">{formatPrice(order.subtotal)}</span>
             </div>
             {order.shippingCost > 0 && (
               <div className="flex justify-between py-3 border-b border-border-minimal">
-                <span className="text-[11px] text-subtle font-bold uppercase tracking-widest">Shipping</span>
-                <span className="text-[13px] font-semibold text-ink">{formatPrice(order.shippingCost)}</span>
+                <span className="text-[11px] text-subtle font-normal uppercase tracking-[0.011em]">Shipping</span>
+                <span className="text-[13px] font-medium text-ink">{formatPrice(order.shippingCost)}</span>
               </div>
             )}
             {order.tax > 0 && (
               <div className="flex justify-between py-3 border-b border-border-minimal">
-                <span className="text-[11px] text-subtle font-bold uppercase tracking-widest">Tax</span>
-                <span className="text-[13px] font-semibold text-ink">{formatPrice(order.tax)}</span>
+                <span className="text-[11px] text-subtle font-normal uppercase tracking-[0.011em]">Tax</span>
+                <span className="text-[13px] font-medium text-ink">{formatPrice(order.tax)}</span>
               </div>
             )}
             {order.discount > 0 && (
               <div className="flex justify-between py-3 border-b border-border-minimal">
-                <span className="text-[11px] text-subtle font-bold uppercase tracking-widest">Discount</span>
-                <span className="text-[13px] font-semibold text-red-500">−{formatPrice(order.discount)}</span>
+                <span className="text-[11px] text-subtle font-normal uppercase tracking-[0.011em]">Discount</span>
+                <span className="text-[13px] font-medium text-sale">−{formatPrice(order.discount)}</span>
               </div>
             )}
             <div className="flex justify-between py-4 border-t-2 border-ink mt-1">
-              <span className="text-[12px] font-bold uppercase tracking-widest text-ink">Total</span>
-              <span className="text-[22px] font-semibold text-ink tracking-tight">{formatPrice(order.total)}</span>
+              <span className="text-[12px] font-normal uppercase tracking-[0.011em] text-ink">Total</span>
+              <span className="text-[22px] font-medium text-ink tracking-tight">{formatPrice(order.total)}</span>
             </div>
           </div>
         </div>
@@ -519,7 +524,7 @@ export default function OrderDetail() {
         {/* ── Order Notes ── */}
         {order.notes && (
           <div className="px-10 py-6 border-t border-border-minimal bg-surface">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle mb-2">Order Notes</p>
+            <p className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle mb-2">Order Notes</p>
             <p className="text-[12px] text-subtle leading-relaxed">{order.notes}</p>
           </div>
         )}
@@ -540,13 +545,13 @@ export default function OrderDetail() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 10 }}
               transition={{ duration: 0.2 }}
-              className="bg-white border border-border-minimal p-10 w-full max-w-sm"
+              className="bg-surface border border-border-minimal p-10 w-full max-w-sm"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="w-5 h-5 text-ink stroke-[1.5] shrink-0" />
-                  <h3 className="text-[13px] font-bold text-ink uppercase tracking-[0.1em]">Cancel Order</h3>
+                  <h3 className="text-[13px] font-normal text-ink uppercase tracking-[0.011em]">Cancel Order</h3>
                 </div>
                 <button
                   onClick={() => setCancelConfirm(false)}
@@ -558,14 +563,14 @@ export default function OrderDetail() {
 
               <p className="text-[12px] text-subtle leading-relaxed mb-2">
                 Are you sure you want to cancel order{' '}
-                <span className="font-bold text-ink">{order.orderNumber}</span>?
+                <span className="font-medium text-ink">{order.orderNumber}</span>?
               </p>
               <p className="text-[11px] text-subtle leading-relaxed mb-8">
                 This action cannot be undone. If a payment was made, a refund may take 5–7 business days.
               </p>
 
               {cancelError && (
-                <p className="text-[11px] text-red-500 font-medium mb-6 border border-red-200 bg-red-50 px-4 py-3">
+                <p className="text-[11px] text-danger font-normal mb-6 border border-danger/30 bg-danger/10 px-4 py-3">
                   {cancelError}
                 </p>
               )}
@@ -574,14 +579,14 @@ export default function OrderDetail() {
                 <button
                   onClick={() => { setCancelConfirm(false); setCancelError(''); }}
                   disabled={cancelling}
-                  className="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest border border-border-minimal text-subtle hover:text-ink hover:border-ink transition-colors disabled:opacity-40"
+                  className="flex-1 py-3 text-[10px] font-normal uppercase tracking-[0.011em] border border-border-minimal text-subtle hover:text-ink hover:border-ink transition-colors disabled:opacity-40"
                 >
                   Keep Order
                 </button>
                 <button
                   onClick={handleCancel}
                   disabled={cancelling}
-                  className="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest bg-ink text-white hover:opacity-80 transition-opacity disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 text-[10px] font-normal uppercase tracking-[0.011em] bg-accent text-white hover:opacity-80 transition-opacity disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                   {cancelling ? (
                     <>

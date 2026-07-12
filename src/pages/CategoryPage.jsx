@@ -63,16 +63,16 @@ export default function CategoryPage() {
           className="w-full h-full object-cover opacity-50"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-12 text-center px-6">
+        <div className="absolute inset-0 bg-linear-to-t from-ink/60 to-transparent flex items-end justify-center pb-12 text-center px-6">
           <div>
-            <h1 className="text-4xl lg:text-6xl font-light text-white tracking-tight uppercase mb-4">
+            <h1 className="font-heading text-4xl lg:text-6xl font-normal text-white tracking-tight uppercase mb-4">
               {displayName}
             </h1>
             {activeNode?.description && (
               <p className="text-white/60 text-sm max-w-lg mx-auto mb-4">{activeNode.description}</p>
             )}
             {/* Breadcrumb */}
-            <div className="flex items-center justify-center gap-2 text-white/60 text-[11px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-2 text-white/60 text-[11px] font-normal uppercase tracking-[0.011em]">
               <Link to="/" className="hover:text-white transition-colors">Home</Link>
               <ChevronRight className="w-3 h-3" />
               {catNode && (
@@ -104,7 +104,7 @@ export default function CategoryPage() {
         {/* ── Subcategory quick-nav ────────────────────────────────────── */}
         {!subSlug && catNode?.subCategories?.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-[11px] font-bold uppercase tracking-widest text-subtle mb-4">Browse by subcategory</h2>
+            <h2 className="text-[11px] font-normal uppercase tracking-[0.011em] text-subtle mb-4">Browse by subcategory</h2>
             <div className="flex flex-wrap gap-2">
               {catNode.subCategories.map(sub => (
                 <Link
@@ -125,7 +125,7 @@ export default function CategoryPage() {
         {/* Child subcategory quick-nav when at sub level */}
         {subSlug && !childSlug && subNode?.subCategories?.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-[11px] font-bold uppercase tracking-widest text-subtle mb-4">Narrow by type</h2>
+            <h2 className="text-[11px] font-normal uppercase tracking-[0.011em] text-subtle mb-4">Narrow by type</h2>
             <div className="flex flex-wrap gap-2">
               <Link
                 to={`/c/${catSlug}/${subSlug}`}
@@ -152,16 +152,16 @@ export default function CategoryPage() {
         {/* ── Header row ───────────────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-[26px] font-light text-ink tracking-tight">
+            <h2 className="font-heading text-[26px] font-normal text-ink tracking-tight">
               {childSlug ? childNode?.name : subSlug ? `All ${subNode?.name}` : `Explore ${catNode?.name}`}
             </h2>
-            <p className="text-subtle text-[13px] font-medium mt-1">
+            <p className="text-subtle text-[13px] font-normal mt-1">
               {loading ? '…' : `${products.length} products`}
             </p>
           </div>
           <Link
             to={`/products?categorySlug=${activeSlug}`}
-            className="hidden md:flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-subtle hover:text-ink transition-colors border-b border-subtle hover:border-ink pb-0.5"
+            className="hidden md:flex items-center gap-2 text-[12px] font-normal uppercase tracking-[0.011em] text-subtle hover:text-ink transition-colors border-b border-subtle hover:border-ink pb-0.5"
           >
             <SlidersHorizontal className="w-4 h-4" /> Filter & Sort
           </Link>
@@ -189,7 +189,7 @@ export default function CategoryPage() {
             <p className="text-subtle text-[14px] mb-4">No products in this category yet.</p>
             <Link
               to="/products"
-              className="inline-block border border-ink px-8 py-3 text-[12px] font-bold uppercase tracking-widest hover:bg-ink hover:text-white transition-all"
+              className="inline-block rounded-[4px] bg-accent text-white px-8 py-3 text-[12px] font-normal uppercase tracking-[0.011em] hover:opacity-90 transition-all"
             >
               Browse All Products
             </Link>
@@ -199,7 +199,7 @@ export default function CategoryPage() {
         {/* ── Related categories ───────────────────────────────────────── */}
         {!loading && products.length > 0 && catNode?.subCategories?.length > 0 && (
           <div className="mt-24 pt-16 border-t border-border-minimal">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-subtle mb-6">
+            <h3 className="text-[11px] font-normal uppercase tracking-[0.011em] text-subtle mb-6">
               More in {catNode.name}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -212,14 +212,18 @@ export default function CategoryPage() {
                     to={`/c/${catSlug}/${sub.slug}`}
                     className="group relative h-40 bg-surface overflow-hidden"
                   >
-                    <img
-                      src={`https://picsum.photos/seed/${sub.slug}/400/320?grayscale`}
-                      alt={sub.name}
-                      className="w-full h-full object-cover opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500"
-                      referrerPolicy="no-referrer"
-                    />
+                    {sub.image ? (
+                      <img
+                        src={getImageUrl(sub.image)}
+                        alt={sub.name}
+                        className="w-full h-full object-cover opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-surface" />
+                    )}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-white/90 border border-border-minimal px-4 py-2 text-[12px] font-bold uppercase tracking-widest text-ink">
+                      <span className="bg-surface/90 border border-border-minimal px-4 py-2 text-[12px] font-normal uppercase tracking-[0.011em] text-ink">
                         {sub.name}
                       </span>
                     </div>

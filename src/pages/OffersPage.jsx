@@ -5,14 +5,14 @@ import { storefrontService } from '../services/storefront';
 import { useAppearance } from '../context/AppearanceContext';
 
 const TYPE_META = {
-  buy_x_get_y: { label: 'Buy X Get Y',  icon: ShoppingBag, color: 'bg-purple-50 border-purple-200 text-purple-700',  badge: 'bg-purple-600' },
-  bundle:      { label: 'Bundle Deal',  icon: Package,     color: 'bg-blue-50 border-blue-200 text-blue-700',         badge: 'bg-blue-600' },
-  under_price: { label: 'Under Price',  icon: Tag,         color: 'bg-green-50 border-green-200 text-green-700',       badge: 'bg-green-600' },
+  buy_x_get_y: { label: 'Buy X Get Y', icon: ShoppingBag },
+  bundle:      { label: 'Bundle Deal', icon: Package },
+  under_price: { label: 'Under Price', icon: Tag },
 };
 
 function OfferCard({ offer, formatPrice }) {
-  const meta   = TYPE_META[offer.type] || TYPE_META.buy_x_get_y;
-  const Icon   = meta.icon;
+  const meta = TYPE_META[offer.type] || TYPE_META.buy_x_get_y;
+  const Icon = meta.icon;
 
   const getDescription = () => {
     if (offer.type === 'buy_x_get_y')
@@ -30,35 +30,35 @@ function OfferCard({ offer, formatPrice }) {
   };
 
   return (
-    <div className={`border rounded-sm p-8 flex flex-col gap-6 ${meta.color}`}>
+    <div className="border border-border-minimal bg-surface rounded-[4px] p-8 flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className={`w-12 h-12 ${meta.badge} flex items-center justify-center rounded-sm`}>
+          <div className="w-12 h-12 bg-ink flex items-center justify-center rounded-[4px] shrink-0">
             <Icon className="w-6 h-6 text-white" />
           </div>
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">{meta.label}</span>
-            <h3 className="text-[18px] font-bold tracking-tight mt-0.5">{offer.title}</h3>
+            <span className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle">{meta.label}</span>
+            <h3 className="text-[18px] font-heading font-normal tracking-tight text-ink mt-0.5">{offer.title}</h3>
           </div>
         </div>
         {offer.badge && (
-          <span className={`text-[11px] font-black px-3 py-1 ${meta.badge} text-white uppercase tracking-widest rounded-full shrink-0`}>
+          <span className="text-[11px] font-normal px-3 py-1 bg-ink text-white uppercase tracking-[0.011em] rounded-[4px] shrink-0">
             {offer.badge}
           </span>
         )}
       </div>
 
-      <p className="text-[14px] leading-relaxed opacity-80">{offer.description || getDescription()}</p>
+      <p className="text-[14px] leading-relaxed text-subtle">{offer.description || getDescription()}</p>
 
       {offer.endsAt && (
-        <p className="text-[11px] font-bold uppercase tracking-widest opacity-60">
+        <p className="text-[11px] font-normal uppercase tracking-[0.011em] text-subtle">
           Offer ends {new Date(offer.endsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
       )}
 
       <Link
         to={getActionLink()}
-        className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.15em] hover:gap-3 transition-all"
+        className="flex items-center gap-2 text-[12px] font-normal uppercase tracking-[0.011em] text-ink hover:gap-3 transition-all"
       >
         Shop Now <ArrowRight className="w-4 h-4" />
       </Link>
@@ -96,7 +96,7 @@ export default function OffersPage() {
     return (
       <div className="bg-bg min-h-screen py-32 flex flex-col items-center justify-center gap-6 text-center px-10">
         <Gift className="w-12 h-12 text-ink/20" />
-        <p className="text-[14px] text-subtle font-medium">No active offers right now. Check back soon!</p>
+        <p className="text-[14px] text-subtle font-normal">No active offers right now. Check back soon!</p>
         <Link to="/products" className="btn-minimal px-10 py-3">Browse Products</Link>
       </div>
     );
@@ -106,9 +106,9 @@ export default function OffersPage() {
     <div className="bg-bg min-h-screen pb-32">
       {/* Hero */}
       <div className="bg-ink text-white py-20 px-10 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 mb-4">Exclusive</p>
-        <h1 className="text-[36px] sm:text-[48px] font-light tracking-tight mb-4">Special Offers</h1>
-        <p className="text-white/50 text-[14px] font-medium max-w-md mx-auto">
+        <p className="text-[10px] font-normal uppercase tracking-[0.011em] text-white/40 mb-4">Exclusive</p>
+        <h1 className="text-[36px] sm:text-[48px] font-heading font-normal tracking-tight mb-4">Special Offers</h1>
+        <p className="text-white/50 text-[14px] font-normal max-w-md mx-auto">
           {offers.length} active {offers.length === 1 ? 'offer' : 'offers'} — handpicked deals just for you
         </p>
       </div>
@@ -119,8 +119,8 @@ export default function OffersPage() {
         {byType.buy_x_get_y.length > 0 && (
           <section>
             <div className="flex items-center gap-4 mb-10">
-              <ShoppingBag className="w-5 h-5 text-purple-600" />
-              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-ink">Buy X Get Y Free</h2>
+              <ShoppingBag className="w-5 h-5 text-ink" />
+              <h2 className="text-[11px] font-normal uppercase tracking-[0.011em] text-ink">Buy X Get Y Free</h2>
               <div className="flex-1 h-px bg-border-minimal" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -135,8 +135,8 @@ export default function OffersPage() {
         {byType.bundle.length > 0 && (
           <section>
             <div className="flex items-center gap-4 mb-10">
-              <Package className="w-5 h-5 text-blue-600" />
-              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-ink">Bundle Deals</h2>
+              <Package className="w-5 h-5 text-ink" />
+              <h2 className="text-[11px] font-normal uppercase tracking-[0.011em] text-ink">Bundle Deals</h2>
               <div className="flex-1 h-px bg-border-minimal" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -151,8 +151,8 @@ export default function OffersPage() {
         {byType.under_price.length > 0 && (
           <section>
             <div className="flex items-center gap-4 mb-10">
-              <Tag className="w-5 h-5 text-green-600" />
-              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-ink">Under Price Collections</h2>
+              <Tag className="w-5 h-5 text-ink" />
+              <h2 className="text-[11px] font-normal uppercase tracking-[0.011em] text-ink">Under Price Collections</h2>
               <div className="flex-1 h-px bg-border-minimal" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -160,18 +160,18 @@ export default function OffersPage() {
                 <Link
                   key={offer._id}
                   to={`/products?maxPrice=${offer.maxPrice}`}
-                  className="group border border-border-minimal rounded-sm p-8 hover:border-ink/30 transition-all hover:shadow-sm"
+                  className="group border border-border-minimal bg-surface rounded-[4px] p-8 hover:border-ink transition-all"
                 >
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-subtle">Collection</span>
+                    <span className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle">Collection</span>
                     <ArrowRight className="w-4 h-4 text-subtle group-hover:text-ink group-hover:translate-x-1 transition-all" />
                   </div>
-                  <p className="text-[28px] font-light text-ink mb-1">
+                  <p className="text-[28px] font-heading font-normal text-ink mb-1">
                     Under {formatPrice(offer.maxPrice)}
                   </p>
-                  <p className="text-[13px] font-medium text-subtle">{offer.title}</p>
+                  <p className="text-[13px] font-normal text-subtle">{offer.title}</p>
                   {offer.endsAt && (
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-subtle/60 mt-6">
+                    <p className="text-[10px] font-normal uppercase tracking-[0.011em] text-subtle/60 mt-6">
                       Ends {new Date(offer.endsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                     </p>
                   )}

@@ -4,16 +4,20 @@ import { Link } from 'react-router-dom';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useAppearance } from '../../context/AppearanceContext';
+import { useToast } from '../../context/ToastContext';
 import { getImageUrl } from '../../lib/api';
 
 export default function Wishlist() {
   const { wishlist, loading, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { success: toastSuccess } = useToast();
 
-  // Move to cart: add the item, then remove it from the wishlist.
+  // Move to cart: add the item, then remove it from the wishlist. Uses the
+  // silent wishlist toggle so only one combined confirmation is shown.
   const handleMoveToCart = async (product, firstColor, firstSize) => {
     addToCart(product, 1, firstColor, firstSize);
-    await toggleWishlist(product);
+    await toggleWishlist(product, { silent: true });
+    toastSuccess('Moved to bag.');
   };
   const { formatPrice, gridCols } = useAppearance();
   const lgCols = { 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4', 5: 'lg:grid-cols-5' }[gridCols] || 'lg:grid-cols-4';
@@ -88,14 +92,14 @@ export default function Wishlist() {
                     <button
                       onClick={() => handleMoveToCart(product, firstColor, firstSize)}
                       disabled={product.stock <= 0}
-                      className="flex-1 bg-accent text-white py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 disabled:opacity-40"
+                      className="flex-1 bg-accent text-white py-2.5 text-[10px] font-normal uppercase tracking-[0.011em] flex items-center justify-center gap-1.5 rounded-[4px] disabled:opacity-40"
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
                       {product.stock > 0 ? 'Add to Bag' : 'Out of Stock'}
                     </button>
                     <button
                       onClick={() => toggleWishlist(product)}
-                      className="bg-white border border-border-minimal px-3 py-2.5 text-ink hover:text-red-500 transition-colors"
+                      className="bg-surface border border-border-minimal px-3 py-2.5 text-ink hover:border-ink transition-colors rounded-[4px]"
                       title="Remove from wishlist"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -103,7 +107,7 @@ export default function Wishlist() {
                   </div>
                 </div>
 
-                <span className="text-[11px] font-medium text-subtle uppercase tracking-[0.05em] mb-1">
+                <span className="text-[11px] font-normal text-subtle uppercase tracking-[0.011em] mb-1">
                   {product.brand}
                 </span>
                 <Link
@@ -115,11 +119,11 @@ export default function Wishlist() {
                 <div className="flex items-baseline gap-2 mt-auto">
                   {origPrice && origPrice > salePrice ? (
                     <>
-                      <span className="text-sm font-semibold text-[#c53030]">{formatPrice(salePrice)}</span>
+                      <span className="text-sm font-medium text-sale">{formatPrice(salePrice)}</span>
                       <span className="text-[12px] text-subtle line-through">{formatPrice(origPrice)}</span>
                     </>
                   ) : (
-                    <span className="text-sm font-semibold text-ink">{formatPrice(salePrice)}</span>
+                    <span className="text-sm font-medium text-ink">{formatPrice(salePrice)}</span>
                   )}
                 </div>
               </div>

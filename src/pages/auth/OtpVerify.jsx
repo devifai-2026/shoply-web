@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 const OTP_LENGTH = 4;
@@ -9,6 +11,7 @@ export default function OtpVerify() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { sendOtp, verifyOtp } = useAuth();
+  const { error: toastError, success: toastSuccess } = useToast();
 
   const { phone, verificationId: initVerifId, nextPath = '/account' } = location.state || {};
 
@@ -70,7 +73,9 @@ export default function OtpVerify() {
         navigate(nextPath, { replace: true });
       }
     } catch (err) {
-      setError(err.message || 'Verification failed. Please try again.');
+      const msg = getErrorMessage(err, 'Verification failed. Please try again.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }
@@ -86,8 +91,11 @@ export default function OtpVerify() {
       setOtp(Array(OTP_LENGTH).fill(''));
       setCountdown(30);
       inputRefs.current[0]?.focus();
+      toastSuccess('OTP resent.');
     } catch (err) {
-      setError(err.message || 'Could not resend OTP.');
+      const msg = getErrorMessage(err, 'Could not resend OTP.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setResending(false);
     }

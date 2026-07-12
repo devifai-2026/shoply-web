@@ -9,6 +9,7 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppearanceProvider } from './context/AppearanceContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { ToastProvider } from './context/ToastContext';
 
 // Layouts
 import RootLayout from './components/layout/RootLayout';
@@ -46,11 +47,9 @@ import Wishlist from './pages/account/Wishlist';
 import MyReviews from './pages/account/MyReviews';
 import ChangePassword from './pages/account/ChangePassword';
 import TrackOrder from './pages/TrackOrder';
-
-// Placeholder Pages
-const About = () => <div className="p-10 text-center">About Us</div>;
-const Contact = () => <div className="p-10 text-center">Contact Us</div>;
-const Policy = ({ title }) => <div className="p-10 text-center">{title}</div>;
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Policy from './pages/Policy';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -90,8 +89,10 @@ const router = createBrowserRouter([
 
       { path: '/about', element: <About /> },
       { path: '/contact', element: <Contact /> },
-      { path: '/privacy-policy', element: <Policy title="Privacy Policy" /> },
-      { path: '/terms', element: <Policy title="Terms of Service" /> },
+      { path: '/privacy-policy', element: <Policy /> },
+      { path: '/terms', element: <Policy /> },
+      { path: '/shipping-policy', element: <Policy /> },
+      { path: '/return-policy', element: <Policy /> },
 
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
@@ -133,14 +134,16 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
-    <AppearanceProvider>
-      <AuthProvider>
-        <WishlistProvider>
-          <CartProvider>
-            <RouterProvider router={router} />
-          </CartProvider>
-        </WishlistProvider>
-      </AuthProvider>
-    </AppearanceProvider>
+    <ToastProvider>
+      <AppearanceProvider>
+        <AuthProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <RouterProvider router={router} />
+            </CartProvider>
+          </WishlistProvider>
+        </AuthProvider>
+      </AppearanceProvider>
+    </ToastProvider>
   );
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
+import PaymentIcons from '../PaymentIcons';
 
 const WhatsAppIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -69,6 +70,8 @@ export default function Footer() {
           <div>
             <h4 className="font-normal text-ink mb-5 uppercase tracking-[0.011em] text-[11px]">Quick Links</h4>
             <ul className="space-y-3 text-subtle text-[13px]">
+              <li><Link to="/about" className="hover:text-ink transition-colors">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-ink transition-colors">Contact Us</Link></li>
               <li><Link to="/offers" className="hover:text-ink transition-colors">Special Offers</Link></li>
               <li><Link to="/flash-sale" className="hover:text-ink transition-colors">Flash Sale</Link></li>
               <li><Link to="/shipping-policy" className="hover:text-ink transition-colors">Shipping Policy</Link></li>
@@ -120,13 +123,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-border-minimal pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-subtle text-[12px]">© {new Date().getFullYear()} {storeName}. All Rights Reserved.</p>
-          {showPaymentIcons && (
-            <div className="flex items-center gap-6 opacity-60">
-               <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" referrerPolicy="no-referrer" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" referrerPolicy="no-referrer" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" referrerPolicy="no-referrer" />
-            </div>
-          )}
+          {showPaymentIcons && <PaymentIcons />}
         </div>
       </div>
     </footer>

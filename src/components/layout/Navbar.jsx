@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { storefrontService } from '../../services/storefront';
+import { getImageUrl } from '../../lib/api';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -21,12 +22,13 @@ export default function Navbar() {
   const { cartCount }    = useCart();
   const { user }         = useAuth();
   const { wishlist }     = useWishlist();
-  const { headerConfig, logo, storeName } = useAppearance();
+  const { headerConfig, logo, storeName, homepageContent } = useAppearance();
   const navigate  = useNavigate();
   const location  = useLocation();
 
   const isSticky       = headerConfig.sticky !== false;
   const showCategoryBar = headerConfig.categoryBar !== false;
+  const promoStripText  = homepageContent?.promoStrip || '';
 
   // ── Fetch categories from API on mount ────────────────────────────────────
   useEffect(() => {
@@ -68,10 +70,13 @@ export default function Navbar() {
   return (
     <nav className={cn('bg-bg border-b border-border-minimal z-50', isSticky ? 'sticky top-0' : 'relative')}>
 
-      {/* ── Promo Strip ──────────────────────────────────────────────────── */}
-      <div className="bg-promo text-ink text-center py-2 text-[14px] font-normal tracking-[0.009em]">
-        Free delivery on orders over ৳500 · New arrivals every week · Easy returns
-      </div>
+      {/* ── Promo Strip — admin-configured (Appearance → Homepage → Promo
+          Strip); hidden entirely when the tenant hasn't set any text. ──── */}
+      {promoStripText && (
+        <div className="bg-promo text-ink text-center py-2 text-[14px] font-normal tracking-[0.009em]">
+          {promoStripText}
+        </div>
+      )}
 
       {/* ── Main Header ──────────────────────────────────────────────────── */}
       <div className="container mx-auto px-4">
@@ -144,15 +149,6 @@ export default function Navbar() {
                 </Link>
               </li>
 
-              <li className="shrink-0">
-                <Link
-                  to="/offers"
-                  className="flex items-center gap-1 px-3 py-2 text-[12px] font-medium text-accent hover:text-ink transition-colors border-b-2 border-transparent hover:border-accent whitespace-nowrap"
-                >
-                  <Gift className="w-3 h-3" /> Offers
-                </Link>
-              </li>
-
               {categories.map(cat => (
                 <li
                   key={cat._id}
@@ -174,6 +170,15 @@ export default function Navbar() {
                   </Link>
                 </li>
               ))}
+
+              <li className="shrink-0">
+                <Link
+                  to="/offers"
+                  className="flex items-center gap-1 px-3 py-2 text-[12px] font-medium text-accent hover:text-ink transition-colors border-b-2 border-transparent hover:border-accent whitespace-nowrap"
+                >
+                  <Gift className="w-3 h-3" /> Offers
+                </Link>
+              </li>
             </ul>
 
             {/* ── Mega Menu — outside <ul> so it spans the full container width ── */}
@@ -230,15 +235,19 @@ export default function Navbar() {
                       ))}
                     </div>
 
-                    {/* Featured image column */}
+                    {/* Featured image column — real uploaded category image only */}
                     <div className="w-48 flex flex-col gap-4 shrink-0">
                       <div className="relative overflow-hidden aspect-3/4 bg-surface rounded-sm">
-                        <img
-                          src={`https://picsum.photos/seed/${megaCat.slug}/400/600?grayscale`}
-                          alt={megaCat.name}
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
+                        {megaCat.image ? (
+                          <img
+                            src={getImageUrl(megaCat.image)}
+                            alt={megaCat.name}
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-surface" />
+                        )}
                         <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
                           <span className="text-white font-normal text-xs uppercase tracking-[0.011em] leading-tight">{megaCat.name}</span>
                         </div>
@@ -312,16 +321,6 @@ export default function Navbar() {
                           onClick={() => setIsMenuOpen(false)}
                         >
                           All Products
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          to="/offers"
-                          className="text-[15px] font-medium text-accent flex items-center gap-2 py-2.5 border-b border-border-minimal"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          <Gift className="w-4 h-4" /> Offers
                         </Link>
                       </li>
 
@@ -419,6 +418,16 @@ export default function Navbar() {
                           </AnimatePresence>
                         </li>
                       ))}
+
+                      <li>
+                        <Link
+                          to="/offers"
+                          className="text-[15px] font-medium text-accent flex items-center gap-2 py-2.5 border-b border-border-minimal"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Gift className="w-4 h-4" /> Offers
+                        </Link>
+                      </li>
 
                     </ul>
                   </div>
