@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  --color-bg: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-ink: #111111;
+  --color-subtle: #6c757d;
+  --color-accent: #000000;
+  --color-border-minimal: #e9ecef;
+  --color-promo: #fdf2f2;
+
+  /* Dynamic palette tokens (overridden at runtime by AppearanceContext) */
+  --color-primary: #3b8bd4;
+  --color-secondary: #f0997b;
+  --color-on-primary: #ffffff;
+  --color-sale: #e24b4a;
+  --color-success: #1d9e75;
+  --color-danger: #dc2626;
+  --color-badge: #f59e0b;
+  --color-rating: #f59e0b;
+  --color-card: #f7f7f9;
+  --color-border: #e5e7eb;
+  --color-muted-text: #6b7280;
+  --color-text: #1a1a1a;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased bg-bg text-ink;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .btn-minimal {
+    @apply inline-block px-8 py-3 bg-accent text-white text-[12px] font-semibold uppercase tracking-[1px] transition-all hover:opacity-90;
+    border-radius: var(--btn-radius, 0px);
+  }
+  
+  .minimal-card {
+    @apply border border-transparent p-3 transition-all hover:border-border-minimal bg-white;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-surface rounded-full;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border-minimal rounded-full hover:bg-slate-300 transition-colors;
+  }
+
+  /* Custom Pagination for Swiper */
+  .custom-pagination .swiper-pagination-bullet {
+    @apply w-12 h-[2px] rounded-none bg-border-minimal opacity-100 transition-all;
+  }
+  .custom-pagination .swiper-pagination-bullet-active {
+    @apply bg-ink w-20;
+  }
+
+  /* Infinite Scroll Animation */
+  .animate-infinite-scroll {
+    animation: infinite-scroll 60s linear infinite;
+  }
+
+  @keyframes infinite-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
