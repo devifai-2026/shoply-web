@@ -152,10 +152,10 @@ export default function ProductDetail() {
               <span className="text-[12px] font-semibold text-subtle uppercase tracking-[0.1em]">{product.brand}</span>
               <button
                 onClick={handleWishlist}
-                className="text-ink hover:text-red-500 transition-all"
+                className="text-ink hover:text-sale transition-all"
                 title={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
               >
-                <Heart className={cn('w-5 h-5', wishlisted && 'fill-red-500 text-red-500')} />
+                <Heart className={cn('w-5 h-5', wishlisted && 'fill-sale text-sale')} />
               </button>
             </div>
 
@@ -169,14 +169,14 @@ export default function ProductDetail() {
             <div className="flex items-baseline gap-4 mb-12 border-b border-border-minimal pb-8">
               {product.originalPrice && product.originalPrice > product.price ? (
                 <>
-                  <span className="text-3xl font-semibold text-[#c53030]">{formatPrice(product.price)}</span>
-                  <span className="text-xl text-subtle line-through font-medium">{formatPrice(product.originalPrice)}</span>
+                  <span className="text-3xl font-medium text-sale">{formatPrice(product.price)}</span>
+                  <span className="text-xl text-subtle line-through font-normal">{formatPrice(product.originalPrice)}</span>
                 </>
               ) : (
-                <span className="text-3xl font-semibold text-ink">{formatPrice(product.price)}</span>
+                <span className="text-3xl font-medium text-ink">{formatPrice(product.price)}</span>
               )}
               {product.stock <= 0 && (
-                <span className="text-[11px] font-bold uppercase tracking-widest text-red-500 border border-red-200 px-3 py-1">Out of Stock</span>
+                <span className="text-[11px] font-normal uppercase tracking-[0.011em] text-sale border border-border-minimal px-3 py-1">Out of Stock</span>
               )}
             </div>
 
@@ -195,7 +195,7 @@ export default function ProductDetail() {
                 </span>
                 {product.vendor.rating > 0 && (
                   <span className="flex items-center gap-1 text-[11px] font-bold text-subtle">
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    <Star className="w-3 h-3 fill-rating text-rating" />
                     {Number(product.vendor.rating).toFixed(1)}
                   </span>
                 )}
@@ -247,22 +247,22 @@ export default function ProductDetail() {
 
               {/* Active offer banner */}
               {activeOffer?.type === 'buy_x_get_y' && (
-                <div className="flex items-start gap-3 bg-purple-50 border border-purple-200 rounded-sm p-4">
-                  <ShoppingBag className="w-4 h-4 text-purple-600 mt-0.5 shrink-0" />
+                <div className="flex items-start gap-3 bg-surface border border-border-minimal p-4">
+                  <ShoppingBag className="w-4 h-4 text-ink mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-[13px] font-bold text-purple-800">{activeOffer.title}</p>
-                    <p className="text-[12px] text-purple-600 mt-0.5">
+                    <p className="text-[13px] font-medium text-ink">{activeOffer.title}</p>
+                    <p className="text-[12px] text-subtle mt-0.5">
                       Buy {activeOffer.buyQty}, get {activeOffer.getQty} free — quantity set to {activeOffer.buyQty + activeOffer.getQty} automatically.
                     </p>
                   </div>
                 </div>
               )}
               {activeOffer?.type === 'bundle' && (
-                <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-sm p-4">
-                  <Package className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                <div className="flex items-start gap-3 bg-surface border border-border-minimal p-4">
+                  <Package className="w-4 h-4 text-ink mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-[13px] font-bold text-blue-800">{activeOffer.title}</p>
-                    <p className="text-[12px] text-blue-600 mt-0.5">
+                    <p className="text-[13px] font-medium text-ink">{activeOffer.title}</p>
+                    <p className="text-[12px] text-subtle mt-0.5">
                       Add any {activeOffer.bundleCount} items to your cart — bundle price applied at checkout.
                     </p>
                   </div>

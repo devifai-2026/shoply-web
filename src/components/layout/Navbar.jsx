@@ -69,7 +69,7 @@ export default function Navbar() {
     <nav className={cn('bg-bg border-b border-border-minimal z-50', isSticky ? 'sticky top-0' : 'relative')}>
 
       {/* ── Promo Strip ──────────────────────────────────────────────────── */}
-      <div className="bg-promo text-[#c53030] text-center py-2 text-[11px] font-semibold uppercase tracking-[0.15em] border-b border-border-minimal">
+      <div className="bg-promo text-ink text-center py-2 text-[14px] font-normal tracking-[0.009em]">
         Free delivery on orders over ৳500 · New arrivals every week · Easy returns
       </div>
 
@@ -81,7 +81,7 @@ export default function Navbar() {
           <Link to="/" className="shrink-0">
             {logo
               ? <img src={logo} alt={storeName} className="h-10 w-auto object-contain" />
-              : <span className="text-[20px] font-extrabold tracking-tight text-ink uppercase">{storeName}</span>
+              : <span className="text-[20px] font-normal tracking-[0.08em] text-ink uppercase">{storeName}</span>
             }
           </Link>
 
@@ -89,8 +89,8 @@ export default function Navbar() {
           <form onSubmit={handleSearch} className="hidden md:flex grow max-w-2xl relative">
             <input
               type="text"
-              placeholder="Search books, authors, categories…"
-              className="w-full bg-surface border border-border-minimal rounded-[4px] py-2.5 px-5 pl-12 focus:border-accent transition-all outline-none text-sm text-ink"
+              placeholder="Search products, brands, categories…"
+              className="w-full bg-surface border border-border-minimal rounded-full py-2.5 px-5 pl-12 focus:border-ink transition-all outline-none text-sm text-ink"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
@@ -102,7 +102,7 @@ export default function Navbar() {
             <Link to="/account/wishlist" className="text-ink hover:text-subtle transition-colors relative">
               <Heart className="w-[20px] h-[20px]" />
               {wishlist.length > 0 && (
-                <span className="absolute -top-1.25 -right-2 bg-accent text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[10px] min-w-5 text-center">
+                <span className="absolute -top-1.25 -right-2 bg-accent text-white text-[9px] font-medium px-1.5 py-0.5 rounded-full min-w-5 text-center">
                   {wishlist.length}
                 </span>
               )}
@@ -114,7 +114,7 @@ export default function Navbar() {
             <Link to="/cart" className="text-ink hover:text-subtle transition-colors relative">
               <ShoppingCart className="w-[20px] h-[20px]" />
               {cartCount > 0 && (
-                <span className="absolute -top-[5px] -right-[8px] bg-accent text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[10px] min-w-[20px] text-center">
+                <span className="absolute -top-[5px] -right-[8px] bg-accent text-white text-[9px] font-medium px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
                   {cartCount}
                 </span>
               )}
@@ -140,7 +140,7 @@ export default function Navbar() {
                   to="/products"
                   className="flex items-center px-3 py-2 text-[12px] font-medium text-subtle hover:text-ink transition-colors border-b-2 border-transparent hover:border-accent whitespace-nowrap"
                 >
-                  All Books
+                  All Products
                 </Link>
               </li>
 
@@ -187,7 +187,7 @@ export default function Navbar() {
                   : 2;
               return (
                 <div
-                  className="absolute left-0 right-0 top-full bg-bg border border-border-minimal shadow-2xl z-50"
+                  className="absolute left-0 right-0 top-full bg-bg border border-border-minimal z-50"
                   onMouseEnter={() => handleCatEnter(megaCat._id)}
                   onMouseLeave={handleCatLeave}
                 >
@@ -205,7 +205,7 @@ export default function Navbar() {
                         <div key={sub._id}>
                           <Link
                             to={`/c/${megaCat.slug}/${sub.slug}`}
-                            className="font-bold text-[11px] uppercase tracking-widest text-ink mb-2 block hover:text-accent transition-colors leading-snug"
+                            className="font-normal text-[11px] uppercase tracking-[0.011em] text-ink mb-2 block hover:text-subtle transition-colors leading-snug"
                             onClick={() => setActiveMegaMenu(null)}
                           >
                             {sub.name}
@@ -240,12 +240,12 @@ export default function Navbar() {
                           referrerPolicy="no-referrer"
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-                          <span className="text-white font-bold text-xs uppercase tracking-wider leading-tight">{megaCat.name}</span>
+                          <span className="text-white font-normal text-xs uppercase tracking-[0.011em] leading-tight">{megaCat.name}</span>
                         </div>
                       </div>
                       <Link
                         to={`/c/${megaCat.slug}`}
-                        className="text-[11px] font-bold uppercase tracking-widest border-b border-ink pb-1 self-start hover:text-accent hover:border-accent transition-colors"
+                        className="text-[11px] font-normal uppercase tracking-[0.011em] border-b border-ink pb-1 self-start hover:text-subtle hover:border-subtle transition-colors"
                         onClick={() => setActiveMegaMenu(null)}
                       >
                         Browse All →
@@ -268,17 +268,17 @@ export default function Navbar() {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-60 md:hidden"
+              className="fixed inset-0 bg-ink/40 z-60 md:hidden"
             />
 
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-[85%] max-w-100 bg-bg z-70 shadow-2xl flex flex-col md:hidden"
+              className="fixed top-0 right-0 h-full w-[85%] max-w-100 bg-bg border-l border-border-minimal z-70 flex flex-col md:hidden"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-border-minimal">
-                <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-ink">Menu</span>
+                <span className="text-[14px] font-normal uppercase tracking-[0.2em] text-ink">Menu</span>
                 <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-surface transition-colors">
                   <X className="w-5 h-5 text-ink" />
                 </button>
@@ -292,8 +292,8 @@ export default function Navbar() {
                   <form onSubmit={handleSearch} className="relative">
                     <input
                       type="text"
-                      placeholder="Search books, authors…"
-                      className="w-full bg-surface border border-border-minimal rounded-sm py-3 px-5 pl-11 text-[13px] outline-none focus:border-accent"
+                      placeholder="Search products, brands…"
+                      className="w-full bg-surface border border-border-minimal rounded-full py-3 px-5 pl-11 text-[13px] outline-none focus:border-ink"
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                     />
@@ -302,7 +302,7 @@ export default function Navbar() {
 
                   {/* Category list */}
                   <div>
-                    <h3 className="text-[10px] font-bold text-subtle uppercase tracking-[0.2em] mb-4">Categories</h3>
+                    <h3 className="text-[10px] font-normal text-subtle uppercase tracking-[0.2em] mb-4">Categories</h3>
                     <ul className="space-y-0">
 
                       <li>
@@ -363,7 +363,7 @@ export default function Navbar() {
                                       <div className="flex items-center justify-between">
                                         <Link
                                           to={`/c/${cat.slug}/${sub.slug}`}
-                                          className="text-[13px] font-bold uppercase tracking-widest text-ink py-2 grow hover:text-accent transition-colors"
+                                          className="text-[13px] font-normal uppercase tracking-[0.011em] text-ink py-2 grow hover:text-subtle transition-colors"
                                           onClick={() => setIsMenuOpen(false)}
                                         >
                                           {sub.name}
@@ -408,7 +408,7 @@ export default function Navbar() {
 
                                   <Link
                                     to={`/c/${cat.slug}`}
-                                    className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-accent mt-2"
+                                    className="inline-flex items-center gap-1 text-[11px] font-normal uppercase tracking-[0.011em] text-ink mt-2"
                                     onClick={() => setIsMenuOpen(false)}
                                   >
                                     View All {cat.name} <ArrowRight className="w-3 h-3" />
@@ -425,21 +425,21 @@ export default function Navbar() {
 
                   {/* User links */}
                   <div className="border-t border-border-minimal pt-6 space-y-4">
-                    <h3 className="text-[10px] font-bold text-subtle uppercase tracking-[0.2em]">Account</h3>
+                    <h3 className="text-[10px] font-normal text-subtle uppercase tracking-[0.2em]">Account</h3>
                     <Link to="/account" className="flex items-center gap-3 text-[14px] font-medium text-ink" onClick={() => setIsMenuOpen(false)}>
                       <User className="w-4 h-4" /> My Account
                     </Link>
                     <Link to="/account/wishlist" className="flex items-center gap-3 text-[14px] font-medium text-ink" onClick={() => setIsMenuOpen(false)}>
                       <Heart className="w-4 h-4" /> Wishlist
                       {wishlist.length > 0 && (
-                        <span className="ml-auto bg-accent text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[10px] min-w-5 text-center">
+                        <span className="ml-auto bg-accent text-white text-[9px] font-medium px-1.5 py-0.5 rounded-full min-w-5 text-center">
                           {wishlist.length}
                         </span>
                       )}
                     </Link>
                     <Link
                       to="/cart"
-                      className="flex items-center gap-3 text-[14px] font-bold text-white bg-ink px-4 py-3"
+                      className="flex items-center gap-3 text-[14px] font-normal text-white bg-ink px-4 py-3"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <ShoppingCart className="w-4 h-4" /> Bag ({cartCount})
@@ -449,7 +449,7 @@ export default function Navbar() {
               </div>
 
               <div className="p-6 bg-surface border-t border-border-minimal">
-                <p className="text-[10px] text-subtle uppercase tracking-widest font-bold text-center">
+                <p className="text-[10px] text-subtle uppercase tracking-[0.011em] font-normal text-center">
                   {storeName} © {new Date().getFullYear()}
                 </p>
               </div>

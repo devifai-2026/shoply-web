@@ -13,10 +13,12 @@ const FONT_FAMILY = {
   system:  'ui-sans-serif, system-ui, sans-serif',
   Roboto:  "'Roboto', sans-serif",
   Poppins: "'Poppins', sans-serif",
+  Inter:   "'Inter', sans-serif",
+  'Source Serif 4': "'Source Serif 4', Georgia, serif",
 };
 
 // Fonts that must be fetched from Google Fonts before they render
-const GOOGLE_FONTS = { Roboto: true, Poppins: true };
+const GOOGLE_FONTS = { Roboto: true, Poppins: true, Inter: true, 'Source Serif 4': true };
 
 function loadGoogleFont(name) {
   const id = `gfont-${name}`;
@@ -28,7 +30,10 @@ function loadGoogleFont(name) {
   document.head.appendChild(link);
 }
 
-const BTN_RADIUS = { sharp: '0px', rounded: '8px', pill: '9999px' };
+// Constrained to the design system's binary radius (4px rectangular, 40px
+// pill) — the tenant admin's sharp/rounded/pill choice still does something
+// (rectangular vs. pill), just within the allowed 2 values, not 3 distinct ones.
+const BTN_RADIUS = { sharp: '4px', rounded: '4px', pill: '40px' };
 
 // Parse a hex color to [r, g, b] (0-255 each)
 function hexToRgb(hex) {
@@ -64,8 +69,8 @@ export function AppearanceProvider({ children }) {
     const root = document.documentElement;
     const { colors = {}, typography = {}, layout = {}, favicon, customCSS = {} } = appearance;
 
-    const bg   = colors.bg   || '#ffffff';
-    const text = colors.text || '#111111';
+    const bg   = colors.bg   || '#fbf8f6';
+    const text = colors.text || '#333333';
 
     if (colors.primary)  root.style.setProperty('--color-accent', colors.primary);
     root.style.setProperty('--color-bg',             bg);

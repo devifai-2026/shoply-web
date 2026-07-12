@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-heading: 'Source Serif 4', Georgia, 'Times New Roman', serif;
 
-  --color-bg: #ffffff;
-  --color-surface: #f8f9fa;
-  --color-ink: #111111;
-  --color-subtle: #6c757d;
-  --color-accent: #000000;
-  --color-border-minimal: #e9ecef;
-  --color-promo: #fdf2f2;
+  --color-bg: #fbf8f6;              /* Cream Paper — page canvas */
+  --color-surface: #ffffff;         /* Pure White — cards/surfaces */
+  --color-ink: #333333;             /* Charcoal — primary text/headings */
+  --color-subtle: #6c6a6a;          /* Smoke — muted/secondary text */
+  --color-accent: #000000;          /* Ink Black — the one primary CTA color */
+  --color-border-minimal: #dadada;  /* Ash — dividers/input borders */
+  --color-promo: #fbf8f6;           /* promo strip: cream, no separate fill */
+  --color-accent-decorative: #f1f29f; /* Butter — decorative underline ONLY, never buttons/badges/alerts */
 
   /* Dynamic palette tokens (overridden at runtime by AppearanceContext) */
   --color-primary: #3b8bd4;
@@ -22,9 +23,17 @@
   --color-badge: #f59e0b;
   --color-rating: #f59e0b;
   --color-card: #f7f7f9;
-  --color-border: #e5e7eb;
-  --color-muted-text: #6b7280;
-  --color-text: #1a1a1a;
+  --color-border: #dadada;
+  --color-muted-text: #6c6a6a;
+  --color-text: #333333;
+
+  /* Binary radius system: 4px rectangular, 40px pill — nothing in between */
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 4px;
+  --radius-full: 40px;
 }
 
 @layer base {
@@ -39,12 +48,25 @@
 
 @layer components {
   .btn-minimal {
-    @apply inline-block px-8 py-3 bg-accent text-white text-[12px] font-semibold uppercase tracking-[1px] transition-all hover:opacity-90;
-    border-radius: var(--btn-radius, 0px);
+    @apply inline-block px-8 py-3 bg-accent text-white text-[12px] font-normal uppercase tracking-[0.011em] transition-all hover:opacity-90;
+    border-radius: var(--btn-radius, 4px);
   }
-  
+
   .minimal-card {
-    @apply border border-transparent p-3 transition-all hover:border-border-minimal bg-white;
+    @apply border border-transparent p-3 transition-all hover:border-border-minimal bg-surface;
+  }
+
+  /* Large numeric/display contexts only (flash-sale countdowns, hero stats) —
+     weight 100 per the design system; never apply to headings/body text broadly. */
+  .text-display {
+    font-family: var(--font-sans);
+    font-weight: 100;
+    letter-spacing: 0.008em;
+  }
+
+  /* Short (not full-width) decorative underline beneath a heading */
+  .heading-accent-rule {
+    @apply block w-16 h-[3px] bg-[var(--color-accent-decorative)] mt-3 mb-4;
   }
 }
 

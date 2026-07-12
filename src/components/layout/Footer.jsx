@@ -25,36 +25,37 @@ const SOCIAL_CONFIG = [
 ];
 
 export default function Footer() {
-  const { footerConfig, logo, storeName, socialLinks } = useAppearance();
+  const { footerConfig, logo, storeName, socialLinks, supportEmail, storePhone, storeAddress } = useAppearance();
   const showSocialLinks  = footerConfig.socialLinks  !== false;
   const showPaymentIcons = footerConfig.paymentIcons !== false;
 
   const activeSocialLinks = SOCIAL_CONFIG.filter(({ key }) => socialLinks[key]);
+  const hasContactInfo = storeAddress || storePhone || supportEmail;
 
   return (
-    <footer className="bg-bg border-t border-border-minimal pt-32 pb-16">
-      <div className="container mx-auto px-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-32">
+    <footer className="bg-bg border-t border-border-minimal pt-16 pb-10">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
           {/* Brand Info */}
-          <div className="space-y-10">
+          <div className="space-y-5">
             <Link to="/" className="block">
               {logo
                 ? <img src={logo} alt={storeName} className="h-10 w-auto object-contain" />
-                : <span className="text-[24px] font-light tracking-[0.2em] text-ink uppercase italic">{storeName}<span className="opacity-30">.</span></span>
+                : <span className="font-heading text-[22px] font-normal text-ink">{storeName}</span>
               }
             </Link>
-            <p className="text-subtle leading-[1.8] text-[13px] font-medium max-w-sm">
-              Architecting a curated lifestyle through intentional design, sustainable practices, and the relentless pursuit of simplicity.
+            <p className="text-subtle leading-relaxed text-[13px] max-w-sm">
+              Quality products, curated for you — with fast delivery and easy returns.
             </p>
             {showSocialLinks && activeSocialLinks.length > 0 && (
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-5">
                 {activeSocialLinks.map(({ key, Icon, buildUrl }) => (
                   <a
                     key={key}
                     href={buildUrl(socialLinks[key])}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-ink/40 hover:text-ink transition-colors"
+                    className="text-subtle hover:text-ink transition-colors"
                     aria-label={key}
                   >
                     <Icon className="w-4 h-4" />
@@ -66,56 +67,61 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-ink mb-10 uppercase tracking-[0.3em] text-[10px]">Logistics</h4>
-            <ul className="space-y-5 text-subtle text-[12px] font-medium uppercase tracking-widest">
+            <h4 className="font-normal text-ink mb-5 uppercase tracking-[0.011em] text-[11px]">Quick Links</h4>
+            <ul className="space-y-3 text-subtle text-[13px]">
               <li><Link to="/offers" className="hover:text-ink transition-colors">Special Offers</Link></li>
               <li><Link to="/flash-sale" className="hover:text-ink transition-colors">Flash Sale</Link></li>
-              <li><Link to="/shipping-policy" className="hover:text-ink transition-colors">Inbound</Link></li>
-              <li><Link to="/return-policy" className="hover:text-ink transition-colors">Exchanges</Link></li>
-              <li><Link to="/terms" className="hover:text-ink transition-colors">Protocol</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-ink transition-colors">Encryption</Link></li>
+              <li><Link to="/shipping-policy" className="hover:text-ink transition-colors">Shipping Policy</Link></li>
+              <li><Link to="/return-policy" className="hover:text-ink transition-colors">Returns &amp; Exchanges</Link></li>
+              <li><Link to="/terms" className="hover:text-ink transition-colors">Terms of Service</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-ink transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
           {/* Account */}
           <div>
-            <h4 className="font-bold text-ink mb-10 uppercase tracking-[0.3em] text-[10px]">Identity</h4>
-            <ul className="space-y-5 text-subtle text-[12px] font-medium uppercase tracking-widest">
+            <h4 className="font-normal text-ink mb-5 uppercase tracking-[0.011em] text-[11px]">Account</h4>
+            <ul className="space-y-3 text-subtle text-[13px]">
               <li><Link to="/account" className="hover:text-ink transition-colors">Dashboard</Link></li>
-              <li><Link to="/account/orders" className="hover:text-ink transition-colors">History</Link></li>
-              <li><Link to="/account/wishlist" className="hover:text-ink transition-colors">Curations</Link></li>
-              <li><Link to="/login" className="hover:text-ink transition-colors">Access</Link></li>
+              <li><Link to="/account/orders" className="hover:text-ink transition-colors">Order History</Link></li>
+              <li><Link to="/account/wishlist" className="hover:text-ink transition-colors">Wishlist</Link></li>
+              <li><Link to="/login" className="hover:text-ink transition-colors">Sign In</Link></li>
             </ul>
           </div>
 
-          {/* Info */}
-          <div>
-            <h4 className="font-bold text-ink mb-10 uppercase tracking-[0.3em] text-[10px]">Studio</h4>
-            <ul className="space-y-5 text-subtle text-[12px] font-medium leading-relaxed">
-              <li className="flex gap-4">
-                <MapPin className="w-4 h-4 text-ink/20 shrink-0" />
-                <span>124 Minimalist Ave, <br />Structure Dist, LDN</span>
-              </li>
-              <li className="flex gap-4">
-                <Phone className="w-4 h-4 text-ink/20 shrink-0" />
-                <span>+44 020 7946 0123</span>
-              </li>
-              <li className="flex gap-4">
-                <Mail className="w-4 h-4 text-ink/20 shrink-0" />
-                <span>studio@auramarket.cc</span>
-              </li>
-            </ul>
-          </div>
+          {/* Contact */}
+          {hasContactInfo && (
+            <div>
+              <h4 className="font-normal text-ink mb-5 uppercase tracking-[0.011em] text-[11px]">Contact</h4>
+              <ul className="space-y-3 text-subtle text-[13px] leading-relaxed">
+                {storeAddress && (
+                  <li className="flex gap-3">
+                    <MapPin className="w-4 h-4 text-subtle shrink-0 mt-0.5" />
+                    <span>{storeAddress}</span>
+                  </li>
+                )}
+                {storePhone && (
+                  <li className="flex gap-3">
+                    <Phone className="w-4 h-4 text-subtle shrink-0 mt-0.5" />
+                    <span>{storePhone}</span>
+                  </li>
+                )}
+                {supportEmail && (
+                  <li className="flex gap-3">
+                    <Mail className="w-4 h-4 text-subtle shrink-0 mt-0.5" />
+                    <span>{supportEmail}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border-minimal pt-16 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex flex-col gap-2 scale-90 md:scale-100 items-start">
-             <p className="text-subtle text-[10px] font-bold uppercase tracking-[0.3em]">Design Integrity Since 2026</p>
-             <p className="text-ink/20 text-[9px] font-bold uppercase tracking-[0.1em]">© {new Date().getFullYear()} {storeName}. All Rights Reserved.</p>
-          </div>
+        <div className="border-t border-border-minimal pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-subtle text-[12px]">© {new Date().getFullYear()} {storeName}. All Rights Reserved.</p>
           {showPaymentIcons && (
-            <div className="flex items-center gap-10 opacity-30 grayscale hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-6 opacity-60">
                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" referrerPolicy="no-referrer" />
                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" referrerPolicy="no-referrer" />
                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" referrerPolicy="no-referrer" />
