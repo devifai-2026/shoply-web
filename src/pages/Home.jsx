@@ -15,16 +15,17 @@ import NewArrivalCard from '../components/product/NewArrivalCard';
 import RecentlyViewedCard from '../components/product/RecentlyViewedCard';
 import {
   X, Zap, Mail, ChevronRight, ArrowLeft,
-  Truck, Shield, RefreshCw, Headphones,
+  Truck, Shield, RefreshCw, Headphones, Check, Lock, Star,
   Gift, ShoppingBag, Package, Tag,
 } from 'lucide-react';
 
-const TRUST_ITEMS = [
-  { Icon: Truck,      label: 'Free Delivery' },
-  { Icon: Shield,     label: 'Secure Payment' },
-  { Icon: RefreshCw,  label: 'Easy Returns' },
-  { Icon: Headphones, label: '24/7 Support' },
-];
+// Maps Appearance.homepageContent.trustBadges[].icon (a fixed key set
+// validated server-side) to a real icon component — never fabricated copy,
+// the label/icon pair itself always comes from admin-configured data.
+const TRUST_ICON_MAP = {
+  truck: Truck, shield: Shield, refresh: RefreshCw, headphones: Headphones,
+  check: Check, lock: Lock, gift: Gift, star: Star,
+};
 
 // Shared section heading with the short (not full-width) decorative underline.
 function SectionHeading({ children, action, center }) {
@@ -57,6 +58,7 @@ export default function Home() {
 
   const { isSectionEnabled, homepageContent, gridCols } = useAppearance();
   const categoryTiles = homepageContent.categoryTiles || [];
+  const trustBadges   = homepageContent.trustBadges || [];
   const lgCols = { 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4', 5: 'lg:grid-cols-5' }[gridCols] || 'lg:grid-cols-4';
 
   useEffect(() => {
@@ -192,20 +194,29 @@ export default function Home() {
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          TRUST BAR
+          TRUST BAR — admin-configured (Appearance → Homepage → Trust Bar),
+          hidden entirely when the tenant hasn't set any badges up.
       ══════════════════════════════════════════════════════════ */}
-      <section className="border-y border-border-minimal bg-surface/40">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border-minimal">
-            {TRUST_ITEMS.map(({ Icon, label }) => (
-              <div key={label} className="flex flex-col items-center justify-center gap-2 py-5 px-4">
-                <Icon className="w-5 h-5 text-ink" />
-                <span className="text-[10px] font-normal uppercase tracking-[0.011em] text-ink">{label}</span>
-              </div>
-            ))}
+      {trustBadges.length > 0 && (
+        <section className="border-y border-border-minimal bg-surface/40">
+          <div className="container mx-auto px-4">
+            <div
+              className="grid divide-x divide-border-minimal"
+              style={{ gridTemplateColumns: `repeat(${Math.min(trustBadges.length, 4)}, minmax(0, 1fr))` }}
+            >
+              {trustBadges.map((badge, i) => {
+                const Icon = TRUST_ICON_MAP[badge.icon] || Truck;
+                return (
+                  <div key={i} className="flex flex-col items-center justify-center gap-2 py-5 px-4">
+                    <Icon className="w-5 h-5 text-ink" />
+                    <span className="text-[10px] font-normal uppercase tracking-[0.011em] text-ink text-center">{badge.label}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ══════════════════════════════════════════════════════════
           CATEGORY ICON GRID
@@ -426,13 +437,15 @@ export default function Home() {
       {promoBanners.length > 0 && (
       <section className="py-0">
         {/* First banner — full width */}
-        <div className="relative h-56 sm:h-72 md:h-80 overflow-hidden">
-          <img
-            src={promoBanners[0].image ? getImageUrl(promoBanners[0].image) : undefined}
-            alt={promoBanners[0].title || 'Promotion'}
-            className="w-full h-full object-cover bg-surface"
-            referrerPolicy="no-referrer"
-          />
+        <div className="relative h-56 sm:h-72 md:h-80 overflow-hidden bg-surface">
+          {promoBanners[0].image && (
+            <img
+              src={getImageUrl(promoBanners[0].image)}
+              alt={promoBanners[0].title || 'Promotion'}
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          )}
           <div className="absolute inset-0 bg-ink/45" />
           <div className="absolute bottom-7 left-6 md:left-14">
             {promoBanners[0].subtitle && (
@@ -457,12 +470,14 @@ export default function Home() {
           <div className={`grid grid-cols-1 ${promoBanners.length === 2 ? 'md:grid-cols-1' : promoBanners.length === 3 ? 'md:grid-cols-2' : 'md:grid-cols-2'}`}>
             {promoBanners.slice(1).map((banner, i) => (
               <div key={i} className="relative h-56 md:h-72 overflow-hidden group bg-surface">
-                <img
-                  src={banner.image ? getImageUrl(banner.image) : undefined}
-                  alt={banner.title || `Banner ${i + 2}`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 bg-surface"
-                  referrerPolicy="no-referrer"
-                />
+                {banner.image && (
+                  <img
+                    src={getImageUrl(banner.image)}
+                    alt={banner.title || `Banner ${i + 2}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
                 <div className="absolute inset-0 bg-linear-to-t from-ink/65 via-ink/10 to-transparent" />
                 <div className="absolute bottom-6 left-6">
                   {banner.subtitle && (
