@@ -1,8 +1,21 @@
 import React, { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { trackEvent } from '../../lib/tracking';
+
+// Visible only when ?preview=1 is in the URL (opened from Appearance →
+// Preview in the admin panel) — makes it unmistakable this is a staged
+// draft, not what real customers currently see.
+function PreviewBanner() {
+  const [searchParams] = useSearchParams();
+  if (searchParams.get('preview') !== '1') return null;
+  return (
+    <div className="bg-ink text-white text-center py-2 text-[12px] font-semibold uppercase tracking-wide sticky top-0 z-[60]">
+      Preview mode — showing an unpublished draft, not what customers currently see
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -25,6 +38,7 @@ export default function RootLayout() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <ScrollToTop />
       <PageViewTracker />
+      <PreviewBanner />
       <Navbar />
       <main className="flex-grow">
         <Outlet />

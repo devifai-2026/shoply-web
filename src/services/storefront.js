@@ -22,14 +22,22 @@ export const storefrontService = {
   getActiveFlashSale: () =>
     api.get('/storefront/flash-sales/active'),
 
-  getAppearance: () =>
-    api.get('/storefront/appearance'),
+  // Forwards ?preview=1 from the current page URL so an admin previewing a
+  // saved-but-unpublished draft (via Appearance → Preview) sees the staged
+  // content instead of what's actually live for real customers.
+  getAppearance: () => {
+    const isPreview = new URLSearchParams(window.location.search).get('preview') === '1';
+    return api.get(`/storefront/appearance${isPreview ? '?preview=1' : ''}`);
+  },
 
   getPaymentGateways: () =>
     api.get('/storefront/payment-gateways'),
 
   getActiveOffers: () =>
     api.get('/storefront/offers'),
+
+  getSponsoredSlots: () =>
+    api.get('/storefront/sponsored-slots'),
 
   getOffer: (id) =>
     api.get(`/storefront/offers/${id}`),

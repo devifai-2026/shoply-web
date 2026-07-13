@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate, useParams } from 'react-router-dom';
+import { captureResellerRef } from './lib/reseller';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppearanceProvider } from './context/AppearanceContext';
@@ -44,6 +45,8 @@ import Orders from './pages/account/Orders';
 import OrderDetail from './pages/account/OrderDetail';
 import Profile from './pages/account/Profile';
 import Addresses from './pages/account/Addresses';
+import Wallet from './pages/account/Wallet';
+import Reseller from './pages/account/Reseller';
 import Wishlist from './pages/account/Wishlist';
 import MyReviews from './pages/account/MyReviews';
 import ChangePassword from './pages/account/ChangePassword';
@@ -116,6 +119,8 @@ const router = createBrowserRouter([
           { path: 'orders/:id', element: <OrderDetail /> },
           { path: 'profile', element: <Profile /> },
           { path: 'addresses', element: <Addresses /> },
+          { path: 'wallet', element: <Wallet /> },
+          { path: 'reseller', element: <Reseller /> },
           { path: 'wishlist', element: <Wishlist /> },
           { path: 'reviews', element: <MyReviews /> },
           { path: 'change-password', element: <ChangePassword /> },
@@ -135,6 +140,7 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
+  useEffect(() => { captureResellerRef(); }, []);
   return (
     <ToastProvider>
       <AppearanceProvider>

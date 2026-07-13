@@ -43,4 +43,15 @@ export const customerAuthService = {
 
   setDefaultAddress: (id) =>
     api.patch(`/customer/addresses/${id}/default`),
+
+  // Wallet — refund credits and reseller margins
+  getWallet: () =>
+    api.get('/customer/wallet'),
+
+  // Reseller mode — share-with-margin
+  getReseller: () =>
+    api.get('/customer/reseller'),
+
+  enableReseller: () =>
+    api.post('/customer/reseller/enable'),
 };

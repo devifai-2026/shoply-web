@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAppearance } from '../context/AppearanceContext';
 import { orderService } from '../services/orderService';
 import { storefrontService } from '../services/storefront';
+import { customerAuthService } from '../services/customerAuth';
 import {
   paymentService,
   loadRazorpayScript,
@@ -13,6 +14,7 @@ import {
   submitRedirectForm,
 } from '../services/paymentService';
 import { getImageUrl } from '../lib/api';
+import { getResellerRef } from '../lib/reseller';
 import { Truck, CreditCard, CheckCircle2, Lock, Smartphone, Wallet, Globe, Loader2 } from 'lucide-react';
 import { cn, getErrorMessage } from '../lib/utils';
 import { useToast } from '../context/ToastContext';
@@ -117,6 +119,10 @@ export default function Checkout() {
   const [gateways, setGateways]       = useState([]);
   const [selectedGw, setSelectedGw]   = useState('');
 
+  // Wallet — refund credits only, applied as a deduction at checkout.
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [useWallet, setUseWallet]         = useState(false);
+
   // Stripe inline payment flow state
   const [stripeData, setStripeData]   = useState(null);
   const [pendingOrderId, setPendingOrderId] = useState(null);
@@ -186,6 +192,15 @@ export default function Checkout() {
         setGateways(list);
         if (list.length > 0) setSelectedGw(list[0].slug);
       })
+      .catch(() => {});
+  }, []);
+
+  // Load wallet balance so "Use Wallet Balance" can show a real number —
+  // background data load, fails silently (no toast) same as other
+  // page-load fetches on this page.
+  useEffect(() => {
+    customerAuthService.getWallet()
+      .then(res => setWalletBalance((res.data || res)?.balance || 0))
       .catch(() => {});
   }, []);
 
@@ -310,7 +325,12 @@ export default function Checkout() {
     return sum + Math.max(0, normalCombined - (item.bundleOffer.bundlePrice ?? normalCombined));
   }, 0);
 
-  const finalTotal = Math.max(0, baseTotal) + taxAmount + shipping + giftWrapTotal;
+  const preWalletTotal = Math.max(0, Math.max(0, baseTotal) + taxAmount + shipping + giftWrapTotal - bundleSavings);
+  // Capped at both the real balance and the order total — the server
+  // re-derives and re-caps this independently at order creation too, this
+  // is purely for display so the customer sees the right number here.
+  const walletAmountApplied = useWallet ? Math.min(walletBalance, preWalletTotal) : 0;
+  const finalTotal = Math.max(0, preWalletTotal - walletAmountApplied);
 
   const buildShippingAddress = () => ({
     name:    `${formData.firstName} ${formData.lastName}`.trim(),
@@ -347,6 +367,8 @@ export default function Checkout() {
     couponCode:      couponCode || undefined,
     shippingCost:    shipping,
     discount:        (couponDiscount + offerDiscount) || undefined,
+    useWalletAmount: walletAmountApplied > 0 ? walletAmountApplied : undefined,
+    resellerCode:    getResellerRef() || undefined,
   });
 
   // Returns the already-created order for this session, or creates a new one.
@@ -974,6 +996,28 @@ export default function Checkout() {
                   <div className="flex justify-between text-[13px] font-medium text-success">
                     <span>Bundle Savings</span>
                     <span>-{formatPrice(bundleSavings)}</span>
+                  </div>
+                )}
+                {walletBalance > 0 && (
+                  <div className="border-y border-border-minimal -mx-6 px-6 py-3 my-1">
+                    <label className="flex items-center justify-between gap-3 cursor-pointer">
+                      <span className="flex items-center gap-2 text-[13px] font-medium text-ink">
+                        <input
+                          type="checkbox"
+                          checked={useWallet}
+                          onChange={e => setUseWallet(e.target.checked)}
+                          className="w-4 h-4"
+                        />
+                        Use Wallet Balance
+                      </span>
+                      <span className="text-[12px] text-subtle">{formatPrice(walletBalance)} available</span>
+                    </label>
+                    {useWallet && walletAmountApplied > 0 && (
+                      <div className="flex justify-between text-[13px] font-medium text-success mt-2">
+                        <span>Wallet Applied</span>
+                        <span>-{formatPrice(walletAmountApplied)}</span>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="flex justify-between text-[13px] font-medium text-subtle items-center">

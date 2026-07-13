@@ -51,6 +51,7 @@ export default function Home() {
   const [brands, setBrands]                 = useState([]);
   const [flashSale, setFlashSale]           = useState(null);
   const [activeOffers, setActiveOffers]     = useState([]);
+  const [sponsoredProducts, setSponsoredProducts] = useState([]);
   const [bestSellers, setBestSellers]       = useState([]);
   const [newArrivals, setNewArrivals]       = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
@@ -66,6 +67,7 @@ export default function Home() {
     storefrontService.getBrands().then(r => setBrands(r.data)).catch(() => {});
     storefrontService.getActiveFlashSale().then(r => setFlashSale(r.data)).catch(() => {});
     storefrontService.getActiveOffers().then(r => setActiveOffers(r.data || [])).catch(() => {});
+    storefrontService.getSponsoredSlots().then(r => setSponsoredProducts((r.data || []).map(s => s.product).filter(Boolean))).catch(() => {});
     storefrontService.getProducts({ sort: 'trending', limit: 8 }).then(r => setBestSellers(r.data)).catch(() => {});
     storefrontService.getProducts({ sort: 'newest', limit: 8 }).then(r => {
       setNewArrivals(r.data);
@@ -511,6 +513,42 @@ export default function Home() {
             <SectionHeading action={<ViewAllLink to="/products?sort=trending" />}>Best Sellers</SectionHeading>
             <div className={`grid grid-cols-2 sm:grid-cols-3 ${lgCols} gap-3 md:gap-4`}>
               {bestSellers.map(product => {
+                const pid = product._id || product.id;
+                const salePrice = product.price;
+                const origPrice = product.originalPrice;
+                const discountPct = origPrice && origPrice > salePrice
+                  ? Math.round(((origPrice - salePrice) / origPrice) * 100)
+                  : 0;
+                return (
+                  <BestSellersCard
+                    key={pid}
+                    brand={product.brand}
+                    productName={product.name}
+                    image={getImageUrl(product.images?.[0] || '')}
+                    rating={product.rating || 0}
+                    reviewCount={product.reviewCount || 0}
+                    discountedPrice={salePrice}
+                    originalPrice={origPrice}
+                    discountPercent={discountPct}
+                    product={product}
+                    productUrl={`/products/${product.slug || pid}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          PRODUCT GRID — SPONSORED  (admin-curated featured placements)
+      ══════════════════════════════════════════════════════════ */}
+      {sponsoredProducts.length > 0 && (
+        <section className="py-10 border-b border-border-minimal">
+          <div className="container mx-auto px-4">
+            <SectionHeading>Sponsored</SectionHeading>
+            <div className={`grid grid-cols-2 sm:grid-cols-3 ${lgCols} gap-3 md:gap-4`}>
+              {sponsoredProducts.map(product => {
                 const pid = product._id || product.id;
                 const salePrice = product.price;
                 const origPrice = product.originalPrice;
